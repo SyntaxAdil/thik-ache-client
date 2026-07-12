@@ -92,7 +92,7 @@ export default function Navbar(): React.JSX.Element {
             whileHover={{ scale: 1.03 }}
           >
             <Logo width={30} height={30}></Logo>
-            <span className="text-xl font-bold tracking-tight text-primary transition-colors duration-300">
+            <span className="text-xl font-extrabold tracking-tight text-primary transition-colors duration-300">
               ThikAche
             </span>
           </MotionLink>
