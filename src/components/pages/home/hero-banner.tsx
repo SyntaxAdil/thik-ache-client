@@ -8,8 +8,15 @@ import { buttonVariants } from "../../ui/button";
 import { cn } from "../../../lib/utils";
 import ShaderBackground from "./ShaderBackground";
 
-
 export default function Hero(): React.JSX.Element {
+  const handleScrollDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.scrollBy({
+      top: window.innerHeight * 0.9,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className="relative w-full h-[87vh] min-h-[520px] overflow-hidden bg-black ">
       <ShaderBackground />
@@ -65,12 +72,12 @@ export default function Hero(): React.JSX.Element {
             </Link>
           </motion.div>
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Link
-              href="/how-it-works"
-              className={cn(buttonVariants({ variant: "secondary" }))}
+            <button
+              onClick={handleScrollDown}
+              className={cn(buttonVariants({ variant: "secondary" }), "cursor-pointer")}
             >
               How It Works
-            </Link>
+            </button>
           </motion.div>
         </motion.div>
       </div>
