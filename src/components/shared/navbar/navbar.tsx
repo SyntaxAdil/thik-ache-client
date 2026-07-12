@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   LogOut,
   LayoutDashboard,
   User as UserIcon,
+  Menu,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "../logo/logo";
@@ -52,6 +54,7 @@ export default function Navbar(): React.JSX.Element {
   const user = session?.user;
   const pathname = usePathname();
   const [selectedArea, setSelectedArea] = useState<string>(DHAKA_AREAS[0]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const userArea = (user as { area?: string } | undefined)?.area;
@@ -61,6 +64,12 @@ export default function Navbar(): React.JSX.Element {
       }, 0);
     }
   }, [user]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsMobileMenuOpen(false);
+    }, 0);
+  }, [pathname]);
 
   const handleSignOut = async (): Promise<void> => {
     try {
@@ -96,7 +105,7 @@ export default function Navbar(): React.JSX.Element {
           </MotionLink>
 
           <motion.div
-            className="w-[160px]"
+            className="hidden sm:block w-[160px]"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
@@ -161,90 +170,234 @@ export default function Navbar(): React.JSX.Element {
           })}
         </nav>
 
-        <motion.div
-          className="flex items-center gap-4"
-          initial={{ opacity: 0, x: 12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          {user ? (
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger className="focus:outline-none group rounded-full">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+        <div className="flex items-center gap-3">
+          <motion.div
+            className="hidden md:flex items-center gap-4"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            {user ? (
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger className="focus:outline-none group rounded-full">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Avatar className="w-10 h-10 ring-1 ring-zinc-900 transition-all duration-300 group-hover:ring-indigo-500 cursor-pointer">
+                      <AvatarImage
+                        src={user.image ?? undefined}
+                        alt={user.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-zinc-950 text-zinc-400 text-xs border border-zinc-900">
+                        {user.name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </motion.div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl p-1.5 mt-2 shadow-2xl"
                 >
-                  <Avatar className="w-10 h-10 ring-1 ring-zinc-900 transition-all duration-300 group-hover:ring-indigo-500 cursor-pointer">
-                    <AvatarImage
-                      src={user.image ?? undefined}
-                      alt={user.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="bg-zinc-950 text-zinc-400 text-xs border border-zinc-900">
-                      {user.name?.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-56 bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl p-1.5 mt-2 shadow-2xl"
-              >
-                <DropdownMenuLabel className="px-2.5 py-2 flex flex-col">
-                  <span className="text-sm font-medium text-white truncate">
-                    {user.name}
-                  </span>
-                  <span className="text-xs text-zinc-500 truncate font-normal">
-                    {user.email}
-                  </span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-zinc-900 my-1" />
-                <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
+                  <DropdownMenuLabel className="px-2.5 py-2 flex flex-col">
+                    <span className="text-sm font-medium text-white truncate">
+                      {user.name}
+                    </span>
+                    <span className="text-xs text-zinc-500 truncate font-normal">
+                      {user.email}
+                    </span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-zinc-900 my-1" />
+                  <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
+                    <Link
+                      href="/dashboard"
+                      className="flex w-full items-center gap-2.5"
+                    >
+                      <LayoutDashboard className="w-4 h-4 text-zinc-400" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
+                    <Link
+                      href="/profile"
+                      className="flex w-full items-center gap-2.5"
+                    >
+                      <UserIcon className="w-4 h-4 text-zinc-400" />
+                      My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-zinc-900 my-1" />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="focus:bg-red-950/40 focus:text-red-400 text-red-500 rounded-lg cursor-pointer p-2 text-xs flex items-center gap-2.5 transition-colors duration-150"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/login"
+                  className={cn(buttonVariants({ variant: "ghost" }))}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(buttonVariants({ variant: "primary" }))}
+                >
+                  Join Platform
+                </Link>
+              </div>
+            )}
+          </motion.div>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border border-zinc-900 bg-zinc-950 text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden border-t border-zinc-900"
+          >
+            <div className="container mx-auto flex flex-col gap-1 py-4">
+              <div className="px-2 pb-3 sm:hidden">
+                <Select
+                  value={selectedArea}
+                  onValueChange={(value) => {
+                    if (value) setSelectedArea(value);
+                  }}
+                >
+                  <SelectTrigger className="w-full bg-zinc-950 border-zinc-900 text-zinc-300 rounded-full h-10 px-4 focus:ring-1 focus:ring-indigo-500 text-xs font-medium">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                      <SelectValue placeholder="Select Area" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-[300px]">
+                    {DHAKA_AREAS.map((area) => (
+                      <SelectItem
+                        key={area}
+                        value={area}
+                        className="focus:bg-zinc-900 focus:text-white cursor-pointer text-xs"
+                      >
+                        {area}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={cn(
+                      "px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                      isActive
+                        ? "text-primary bg-zinc-900/60"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/40"
+                    )}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+
+              <div className="h-px bg-zinc-900 my-2" />
+
+              {user ? (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <Avatar className="w-9 h-9 ring-1 ring-zinc-900">
+                      <AvatarImage
+                        src={user.image ?? undefined}
+                        alt={user.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-zinc-950 text-zinc-400 text-xs border border-zinc-900">
+                        {user.name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-medium text-white truncate">
+                        {user.name}
+                      </span>
+                      <span className="text-xs text-zinc-500 truncate">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
                   <Link
                     href="/dashboard"
-                    className="flex w-full items-center gap-2.5"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-900/40 transition-colors"
                   >
-                    <LayoutDashboard className="w-4 h-4 text-zinc-400" />
+                    <LayoutDashboard className="w-4 h-4" />
                     Dashboard
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
                   <Link
                     href="/profile"
-                    className="flex w-full items-center gap-2.5"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-900/40 transition-colors"
                   >
-                    <UserIcon className="w-4 h-4 text-zinc-400" />
+                    <UserIcon className="w-4 h-4" />
                     My Profile
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-zinc-900 my-1" />
-                <DropdownMenuItem
-                  onClick={handleSignOut}
-                  className="focus:bg-red-950/40 focus:text-red-400 text-red-500 rounded-lg cursor-pointer p-2 text-xs flex items-center gap-2.5 transition-colors duration-150"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className={cn(buttonVariants({ variant: "ghost" }))}
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className={cn(buttonVariants({ variant: "primary" }))}
-              >
-                Join Platform
-              </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-950/40 hover:text-red-400 transition-colors text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 px-2">
+                  <Link
+                    href="/login"
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "w-full justify-center"
+                    )}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className={cn(
+                      buttonVariants({ variant: "primary" }),
+                      "w-full justify-center"
+                    )}
+                  >
+                    Join Platform
+                  </Link>
+                </div>
+              )}
             </div>
-          )}
-        </motion.div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
