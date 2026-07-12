@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -48,13 +48,24 @@ const navLinks: NavLink[] = [
 const MotionLink = motion.create(Link);
 
 export default function Navbar(): React.JSX.Element {
-  const { data: session } = useSession();
+  const { data: session, refetch: refecth } = useSession();
   const user = session?.user;
   const pathname = usePathname();
+  const [selectedArea, setSelectedArea] = useState<string>(DHAKA_AREAS[0]);
+
+  useEffect(() => {
+    const userArea = (user as { area?: string } | undefined)?.area;
+    if (userArea) {
+      setTimeout(() => {
+        setSelectedArea(userArea);
+      }, 0);
+    }
+  }, [user]);
 
   const handleSignOut = async (): Promise<void> => {
     try {
       await authClient.signOut();
+      refecth();
       toast.success("Logged out successfully");
     } catch {
       toast.error("Failed to log out");
@@ -90,7 +101,12 @@ export default function Navbar(): React.JSX.Element {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Select defaultValue={DHAKA_AREAS[0]}>
+            <Select
+              value={selectedArea}
+              onValueChange={(value) => {
+                if (value) setSelectedArea(value);
+              }}
+            >
               <SelectTrigger className="w-full bg-zinc-950 border-zinc-900 text-zinc-300 rounded-full h-10 px-4 focus:ring-1 focus:ring-indigo-500 text-xs font-medium">
                 <div className="flex items-center gap-2 max-w-[110px] truncate">
                   <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -154,7 +170,10 @@ export default function Navbar(): React.JSX.Element {
           {user ? (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger className="focus:outline-none group rounded-full">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Avatar className="w-10 h-10 ring-1 ring-zinc-900 transition-all duration-300 group-hover:ring-indigo-500 cursor-pointer">
                     <AvatarImage
                       src={user.image ?? undefined}
@@ -210,10 +229,16 @@ export default function Navbar(): React.JSX.Element {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/login" className={cn(buttonVariants({ variant: "ghost" }))}>
+              <Link
+                href="/login"
+                className={cn(buttonVariants({ variant: "ghost" }))}
+              >
                 Login
               </Link>
-              <Link href="/register" className={cn(buttonVariants({ variant: "primary" }))}>
+              <Link
+                href="/register"
+                className={cn(buttonVariants({ variant: "primary" }))}
+              >
                 Join Platform
               </Link>
             </div>

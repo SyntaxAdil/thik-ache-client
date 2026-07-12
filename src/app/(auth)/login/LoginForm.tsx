@@ -16,6 +16,7 @@ import {
   FieldLabel,
   FieldError,
 } from "../../../components/ui/field";
+import FaGoogle from "../../../components/ui/FaGoogle";
 
 interface LoginFormValues {
   email: string;
@@ -198,24 +199,7 @@ export default function LoginForm() {
           variant="outline"
           className="w-full h-11 rounded-lg border border-input bg-background hover:bg-muted text-foreground flex items-center justify-center gap-2 font-medium transition-colors"
         >
-          <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-            <path
-              fill="#EA4335"
-              d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115Z"
-            />
-            <path
-              fill="#34A853"
-              d="M16.04 15.345c-1.013.682-2.314 1.082-4.04 1.082-2.955 0-5.464-1.991-6.355-4.664L1.586 14.89C3.59 18.96 7.745 21.818 12 21.818c2.936 0 5.891-1.009 8.009-2.909l-3.968-3.564Z"
-            />
-            <path
-              fill="#4285F4"
-              d="M23.49 12.273c0-.773-.064-1.573-.2-2.327H12v4.545h6.482a5.55 5.55 0 0 1-2.41 3.655l3.969 3.564c2.327-2.145 3.449-5.327 3.449-9.437Z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.685 11.763a6.83 6.83 0 0 1 0-2.008L1.66 6.64A11.895 11.895 0 0 0 0 12c0 1.936.464 3.755 1.282 5.382l4.403-3.619Z"
-            />
-          </svg>
+          <FaGoogle></FaGoogle>
           <span>Continue with Google</span>
         </Button>
 
