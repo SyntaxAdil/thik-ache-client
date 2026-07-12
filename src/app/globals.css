@@ -93,9 +93,9 @@
   html {
     @apply font-sans selection:bg-primary/30 selection:text-foreground;
   }
-  button, 
+  /* button, 
   [role="button"],
   a {
     @apply cursor-pointer;
-  }
+  } */
 }
