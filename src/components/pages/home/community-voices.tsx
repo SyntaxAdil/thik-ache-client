@@ -47,7 +47,7 @@ export function CommunityVoicesSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Adjusted spacing and polished copy */}
-        <div className="flex flex-col items-center text-center mb-16">
+        <div className="flex flex-col items-center text-center ">
           <SectionHeading
             title="Community Voices"
             subtitle="See how neighbors are supporting each other and building trusted connections across the city."

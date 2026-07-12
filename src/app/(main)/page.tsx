@@ -5,6 +5,7 @@ import { NearbyRequestsSection } from "../../components/pages/home/nearby-reques
 import { auth } from "../../lib/auth/auth";
 import { headers } from "next/headers";
 import { CommunityVoicesSection } from "../../components/pages/home/community-voices";
+import { FAQSection } from "../../components/pages/home/faq-section";
 
 const Home = async () => {
   const session = await auth.api.getSession({
@@ -17,6 +18,7 @@ const Home = async () => {
       <HowItWorksSection></HowItWorksSection>
       <NearbyRequestsSection userArea={user?.area || "Dhanmondi"}></NearbyRequestsSection>
       <CommunityVoicesSection></CommunityVoicesSection>
+      <FAQSection></FAQSection>
     </div>
   );
 };
