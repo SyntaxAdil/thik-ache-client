@@ -53,7 +53,7 @@ export default function LoginForm() {
             reset();
             router.push("/");
           },
-        }
+        },
       );
       if (error) {
         toast.error(error.message || "Something went wrong");
@@ -77,10 +77,10 @@ export default function LoginForm() {
   };
 
   const handleDemoLogin = async (role: "requester" | "helper") => {
-    const credentials =
-      role === "requester"
-        ? { email: "demo.requester@thikache.app", password: "Demo@1234" }
-        : { email: "demo.helper@thikache.app", password: "Demo@1234" };
+    const credentials = {
+      email: "demo@thikache.app",
+      password: "Demo@1234",
+    };
 
     setValue("email", credentials.email);
     setValue("password", credentials.password);
@@ -97,7 +97,7 @@ export default function LoginForm() {
             toast.success(`Logged in as demo ${role}`);
             router.push("/");
           },
-        }
+        },
       );
       if (error) {
         toast.error(error.message || "Demo login failed");
@@ -211,22 +211,14 @@ export default function LoginForm() {
           <div className="flex-1 border-t border-border"></div>
         </div>
 
-        <div className="flex items-center gap-3 w-full">
+        <div className=" w-full">
           <Button
             type="button"
             onClick={() => handleDemoLogin("requester")}
             variant="outline"
-            className="w-1/2 h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
+            className="w-full h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
           >
-            Demo as Requester
-          </Button>
-          <Button
-            type="button"
-            onClick={() => handleDemoLogin("helper")}
-            variant="outline"
-            className="w-1/2 h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
-          >
-            Demo as Helper
+            Demo Login to ThikAche
           </Button>
         </div>
 
