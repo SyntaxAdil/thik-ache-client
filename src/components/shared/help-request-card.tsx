@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,7 +59,7 @@ export function HelpRequestCard({
     .slice(0, 2);
 
   return (
-    <Card className="w-full border-zinc-900 bg-zinc-950 text-zinc-100 shadow-xl transition-all duration-300 hover:border-zinc-800 flex flex-col justify-between h-[230px] p-5">
+    <Card className="group w-full border-zinc-900 bg-zinc-950 text-zinc-100 shadow-xl transition-all duration-300 hover:border-zinc-800 hover:bg-zinc-900/40 hover:-translate-y-1 flex flex-col justify-between h-[230px] p-5 select-none">
       <CardContent className="p-0 flex flex-col gap-4 h-full justify-between">
         <div className="flex items-center justify-between w-full">
           <div
@@ -71,7 +73,7 @@ export function HelpRequestCard({
           </span>
         </div>
 
-        <h3 className="text-base font-semibold tracking-tight text-zinc-200 line-clamp-2 leading-snug">
+        <h3 className="text-base font-semibold tracking-tight text-zinc-200 line-clamp-2 leading-snug group-hover:text-white transition-colors duration-300">
           {title}
         </h3>
 
@@ -79,11 +81,8 @@ export function HelpRequestCard({
           <div className="relative h-9 w-9 shrink-0 rounded-full border border-zinc-800 bg-zinc-900 flex items-center justify-center overflow-hidden">
             {user.avatarUrl ? (
               <Image
-                src={
-                  user.avatarUrl ??
-                  "https://avatars.dicebear.com/api/identicon/1.svg"
-                }
-                alt={user.name ?? "User Avatar"}
+                src={user.avatarUrl}
+                alt={user.name}
                 width={40}
                 height={40}
                 className="h-full w-full rounded-full object-cover bg-zinc-900"
@@ -94,7 +93,7 @@ export function HelpRequestCard({
             </span>
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-zinc-300 truncate">
+            <span className="text-sm font-semibold text-zinc-300 truncate group-hover:text-zinc-200 transition-colors duration-300">
               {user.name}
             </span>
             <span className="text-xs text-zinc-500 truncate">{location}</span>
@@ -105,8 +104,9 @@ export function HelpRequestCard({
           <span className="text-sm font-bold text-indigo-400 tracking-tight">
             ৳{amount}
           </span>
-          <Link href={`/requests/${_id}`} className="flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white transition-colors">
-          <ChevronRight className="h-4 w-4 text-zinc-600 group-hover/card:text-zinc-400 transition-colors" /></Link>
+          <Link href={`/requests/${_id}`} className="flex items-center gap-1">
+            <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-zinc-300 group-hover:translate-x-0.5 transition-all duration-300" />
+          </Link>
         </div>
       </CardContent>
     </Card>
