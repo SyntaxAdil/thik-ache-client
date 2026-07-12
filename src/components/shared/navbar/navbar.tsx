@@ -19,13 +19,6 @@ import { buttonVariants } from "../../ui/button";
 import { cn } from "../../../lib/utils";
 import { DHAKA_AREAS } from "../../../assets/dhaka-top-areas";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -86,7 +79,7 @@ export default function Navbar(): React.JSX.Element {
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full border-b border-zinc-950 bg-black/50 backdrop-blur-md sticky top-0 z-50 px-4 select-none"
+      className="w-full border-b border-zinc-900 bg-black/40 backdrop-blur-xl sticky top-0 z-50 px-4 select-none"
     >
       <div className="container mx-auto h-20 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
@@ -99,41 +92,19 @@ export default function Navbar(): React.JSX.Element {
             whileHover={{ scale: 1.03 }}
           >
             <Logo width={30} height={30}></Logo>
-            <span className="text-xl font-bold tracking-tight text-primary transition-colors duration-300 ">
+            <span className="text-xl font-bold tracking-tight text-primary transition-colors duration-300">
               ThikAche
             </span>
           </MotionLink>
 
           <motion.div
-            className="hidden sm:block w-[160px]"
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-950/80 border border-zinc-900 text-zinc-300 text-xs font-medium max-w-[180px]"
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Select
-              value={selectedArea}
-              onValueChange={(value) => {
-                if (value) setSelectedArea(value);
-              }}
-            >
-              <SelectTrigger className="w-full bg-zinc-950 border-zinc-900 text-zinc-300 rounded-full h-10 px-4 focus:ring-1 focus:ring-indigo-500 text-xs font-medium">
-                <div className="flex items-center gap-2 max-w-[110px] truncate">
-                  <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                  <SelectValue placeholder="Select Area" />
-                </div>
-              </SelectTrigger>
-              <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-[300px]">
-                {DHAKA_AREAS.map((area) => (
-                  <SelectItem
-                    key={area}
-                    value={area}
-                    className="focus:bg-zinc-900 focus:text-white cursor-pointer text-xs"
-                  >
-                    {area}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0 animate-pulse" />
+            <span className="truncate">{selectedArea}</span>
           </motion.div>
         </div>
 
@@ -277,34 +248,14 @@ export default function Navbar(): React.JSX.Element {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="md:hidden overflow-hidden border-t border-zinc-900"
+            className="md:hidden overflow-hidden border-t border-zinc-900 bg-black"
           >
             <div className="container mx-auto flex flex-col gap-1 py-4">
-              <div className="px-2 pb-3 sm:hidden">
-                <Select
-                  value={selectedArea}
-                  onValueChange={(value) => {
-                    if (value) setSelectedArea(value);
-                  }}
-                >
-                  <SelectTrigger className="w-full bg-zinc-950 border-zinc-900 text-zinc-300 rounded-full h-10 px-4 focus:ring-1 focus:ring-indigo-500 text-xs font-medium">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                      <SelectValue placeholder="Select Area" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-[300px]">
-                    {DHAKA_AREAS.map((area) => (
-                      <SelectItem
-                        key={area}
-                        value={area}
-                        className="focus:bg-zinc-900 focus:text-white cursor-pointer text-xs"
-                      >
-                        {area}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="px-3 pb-3 sm:hidden">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-950 border border-zinc-900 text-zinc-300 text-xs font-medium w-full">
+                  <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                  <span className="truncate">{selectedArea}</span>
+                </div>
               </div>
 
               {navLinks.map((link) => {
