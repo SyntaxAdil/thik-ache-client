@@ -4,6 +4,7 @@ import HowItWorksSection from "../../components/pages/home/how-it-works";
 import { NearbyRequestsSection } from "../../components/pages/home/nearby-requests";
 import { auth } from "../../lib/auth/auth";
 import { headers } from "next/headers";
+import { CommunityVoicesSection } from "../../components/pages/home/community-voices";
 
 const Home = async () => {
   const session = await auth.api.getSession({
@@ -14,7 +15,8 @@ const Home = async () => {
     <div>
       <HeroBanner></HeroBanner>
       <HowItWorksSection></HowItWorksSection>
-      <NearbyRequestsSection userArea={user?.area}></NearbyRequestsSection>
+      <NearbyRequestsSection userArea={user?.area || "Dhanmondi"}></NearbyRequestsSection>
+      <CommunityVoicesSection></CommunityVoicesSection>
     </div>
   );
 };
