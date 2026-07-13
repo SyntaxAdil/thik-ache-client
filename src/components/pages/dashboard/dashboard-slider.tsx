@@ -113,20 +113,31 @@ export default function DashboardSidebar(): React.JSX.Element {
       >
         {!isCollapsed ? (
           <>
-            <div className="flex items-center shrink-0">
+            <div className="flex flex-col justify-center min-w-0 shrink-0">
               <Link href="/" className="flex items-center gap-2 group shrink-0">
                 <Logo width={28} height={28}></Logo>
                 <span className="text-sm font-extrabold tracking-tight text-indigo-400 transition-colors duration-300">
                   ThikAche
                 </span>
               </Link>
+              {userRole === "admin" && (
+                <div className="mt-1 self-start px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black uppercase tracking-widest text-indigo-400 shadow-[0_0_10px_rgba(79,70,229,0.1)]">
+                  Admin Panel
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <SidebarTrigger className="size-8 rounded-lg bg-zinc-900 border border-zinc-800 shadow-sm text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800" />
             </div>
           </>
         ) : (
-          <div className="group relative h-9 w-9 shrink-0">
+          <div className="group relative h-9 w-9 shrink-0 flex items-center justify-center">
+            {userRole === "admin" && (
+              <span className="absolute -top-1 -right-1 z-10 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+            )}
             <div className="absolute inset-0 rounded-xl bg-indigo-500/10 flex items-center justify-center font-bold text-indigo-400 text-sm shadow-sm transition-opacity duration-150 group-hover:opacity-0">
               {userInitial || "U"}
             </div>
