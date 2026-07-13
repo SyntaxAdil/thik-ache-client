@@ -68,7 +68,7 @@ export default async function ExplorePage({ searchParams }: PageProps) {
 
   return (
     <main className="min-h-screen w-full bg-black text-zinc-100 py-16 tracking-tight">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="container mx-auto px-4  lg:px-0 space-y-10">
         
         <ExploreFilters />
 
