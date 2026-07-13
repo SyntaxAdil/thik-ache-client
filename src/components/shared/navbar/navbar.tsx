@@ -35,9 +35,8 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { name: "Explore", href: "/explore" },
-  { name: "Tasks", href: "/tasks" },
   { name: "Community", href: "/community" },
-  { name: "Safety", href: "/safety" },
+  { name: "Trust Center", href: "/trust" },
 ];
 
 const MotionLink = motion.create(Link);
