@@ -18,9 +18,9 @@ import {
   PlusCircle,
   ShieldCheck,
   Users2,
-  Flag,
   LogOut,
   Loader2,
+  Star,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,7 +81,7 @@ export default function DashboardSidebar(): React.JSX.Element {
         {
           title: "Posted Requests",
           icon: ListChecks,
-          href: "/tasks?tab=posted",
+          href: "/dashboard/requests",
         },
         { title: "Post a Request", icon: PlusCircle, href: "/dashboard/requests/add" },
       ],
@@ -92,7 +92,7 @@ export default function DashboardSidebar(): React.JSX.Element {
       items: [
         { title: "Admin Overview", icon: ShieldCheck, href: "/dashboard" },
         { title: "All Users", icon: Users2, href: "/dashboard/users" },
-        { title: "Reports & Flags", icon: Flag, href: "/dashboard/reports" },
+        { title: "Reviews & Ratings", icon: Star, href: "/dashboard/reviews" },
       ],
     },
   ];
