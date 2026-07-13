@@ -4,29 +4,14 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  MapPin,
-  LogOut,
-  LayoutDashboard,
-  User as UserIcon,
-  Menu,
-  X,
-} from "lucide-react";
+import { MapPin, Menu, X } from "lucide-react";
 import { toast } from "sonner";
 import Logo from "../logo/logo";
-import { useSession, authClient } from "../../../lib/auth/auth-client";
+import { useSession } from "../../../lib/auth/auth-client";
 import { buttonVariants } from "../../ui/button";
 import { cn } from "../../../lib/utils";
 import { DHAKA_AREAS } from "../../../assets/dhaka-top-areas";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import AvatarUserDropdown from "../../shared/avatar-dropdown";
 
 interface NavLink {
   name: string;
@@ -42,7 +27,7 @@ const navLinks: NavLink[] = [
 const MotionLink = motion.create(Link);
 
 export default function Navbar(): React.JSX.Element {
-  const { data: session, refetch: refecth } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
   const pathname = usePathname();
   const [selectedArea, setSelectedArea] = useState<string>(DHAKA_AREAS[0]);
@@ -62,16 +47,6 @@ export default function Navbar(): React.JSX.Element {
       setIsMobileMenuOpen(false);
     }, 0);
   }, [pathname]);
-
-  const handleSignOut = async (): Promise<void> => {
-    try {
-      await authClient.signOut();
-      refecth();
-      toast.success("Logged out successfully");
-    } catch {
-      toast.error("Failed to log out");
-    }
-  };
 
   return (
     <motion.header
@@ -148,65 +123,7 @@ export default function Navbar(): React.JSX.Element {
             transition={{ duration: 0.4, delay: 0.1 }}
           >
             {user ? (
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger className="focus:outline-none group rounded-full">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Avatar className="w-10 h-10 ring-1 ring-zinc-900 transition-all duration-300 group-hover:ring-indigo-500 cursor-pointer">
-                      <AvatarImage
-                        src={user.image ?? undefined}
-                        alt={user.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="bg-zinc-950 text-zinc-400 text-xs border border-zinc-900">
-                        {user.name?.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </motion.div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl p-1.5 mt-2 shadow-2xl"
-                >
-                  <DropdownMenuLabel className="px-2.5 py-2 flex flex-col">
-                    <span className="text-sm font-medium text-white truncate">
-                      {user.name}
-                    </span>
-                    <span className="text-xs text-zinc-500 truncate font-normal">
-                      {user.email}
-                    </span>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-zinc-900 my-1" />
-                  <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
-                    <Link
-                      href="/dashboard"
-                      className="flex w-full items-center gap-2.5"
-                    >
-                      <LayoutDashboard className="w-4 h-4 text-zinc-400" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
-                    <Link
-                      href="/profile"
-                      className="flex w-full items-center gap-2.5"
-                    >
-                      <UserIcon className="w-4 h-4 text-zinc-400" />
-                      My Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-zinc-900 my-1" />
-                  <DropdownMenuItem
-                    onClick={handleSignOut}
-                    className="focus:bg-red-950/40 focus:text-red-400 text-red-500 rounded-lg cursor-pointer p-2 text-xs flex items-center gap-2.5 transition-colors duration-150"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <AvatarUserDropdown variant="navbar" />
             ) : (
               <div className="flex items-center gap-3">
                 <Link
@@ -278,49 +195,8 @@ export default function Navbar(): React.JSX.Element {
               <div className="h-px bg-zinc-900 my-2" />
 
               {user ? (
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-3 px-3 py-2">
-                    <Avatar className="w-9 h-9 ring-1 ring-zinc-900">
-                      <AvatarImage
-                        src={user.image ?? undefined}
-                        alt={user.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="bg-zinc-950 text-zinc-400 text-xs border border-zinc-900">
-                        {user.name?.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-medium text-white truncate">
-                        {user.name}
-                      </span>
-                      <span className="text-xs text-zinc-500 truncate">
-                        {user.email}
-                      </span>
-                    </div>
-                  </div>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-900/40 transition-colors"
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-900/40 transition-colors"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    My Profile
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-950/40 hover:text-red-400 transition-colors text-left"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
+                <div className="px-3 py-1">
+                  <AvatarUserDropdown variant="navbar" />
                 </div>
               ) : (
                 <div className="flex flex-col gap-2 px-2">

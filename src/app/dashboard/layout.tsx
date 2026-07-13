@@ -1,4 +1,5 @@
-import DashboardSidebar from "../../components/pages/dashboard/DashboardSlider";
+import DashboardHeader from "../../components/pages/dashboard/dashboard-header";
+import DashboardSidebar from "../../components/pages/dashboard/dashboard-slider";
 import { SidebarProvider } from "../../components/ui/sidebar";
 import { TooltipProvider } from "../../components/ui/tooltip";
 
@@ -13,7 +14,10 @@ export default function DashboardLayout({
         <SidebarProvider>
           <DashboardSidebar />
 
-          <main className=" w-full p-4">{children}</main>
+          <main className=" w-full p-4">
+            <DashboardHeader title="Dashboard" />
+            <section>{children}</section>
+          </main>
         </SidebarProvider>
       </TooltipProvider>
     </section>

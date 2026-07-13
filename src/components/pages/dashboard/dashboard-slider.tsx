@@ -70,8 +70,8 @@ export default function DashboardSidebar(): React.JSX.Element {
       group: "Main Menu",
       roles: ["user", "admin"],
       items: [
-        { title: "My Tasks", icon: ListChecks, href: "/tasks" },
-        { title: "My Profile", icon: User, href: "/profile" },
+        { title: "My Tasks", icon: ListChecks, href: "/dashboard/tasks" },
+        { title: "My Profile", icon: User, href: "/dashboard/profile" },
       ],
     },
     {
@@ -83,16 +83,16 @@ export default function DashboardSidebar(): React.JSX.Element {
           icon: ListChecks,
           href: "/tasks?tab=posted",
         },
-        { title: "Post a Request", icon: PlusCircle, href: "/requests/add" },
+        { title: "Post a Request", icon: PlusCircle, href: "/dashboard/requests/add" },
       ],
     },
     {
       group: "Administration",
       roles: ["admin"],
       items: [
-        { title: "Admin Overview", icon: ShieldCheck, href: "/admin" },
-        { title: "All Users", icon: Users2, href: "/admin/users" },
-        { title: "Reports & Flags", icon: Flag, href: "/admin/reports" },
+        { title: "Admin Overview", icon: ShieldCheck, href: "/dashboard" },
+        { title: "All Users", icon: Users2, href: "/dashboard/users" },
+        { title: "Reports & Flags", icon: Flag, href: "/dashboard/reports" },
       ],
     },
   ];
