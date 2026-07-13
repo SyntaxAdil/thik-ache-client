@@ -104,7 +104,7 @@ export function HelpRequestCard({
           <span className="text-sm font-bold text-indigo-400 tracking-tight">
             ৳{amount}
           </span>
-          <Link href={`/requests/${_id}`} className="flex items-center gap-1">
+          <Link href={`/explore/${_id}`} className="flex items-center gap-1">
             <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-zinc-300 group-hover:translate-x-0.5 transition-all duration-300" />
           </Link>
         </div>
