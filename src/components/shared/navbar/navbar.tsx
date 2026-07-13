@@ -81,7 +81,7 @@ export default function Navbar(): React.JSX.Element {
       transition={{ duration: 0.4 }}
       className="w-full border-b border-zinc-900 bg-black/40 backdrop-blur-xl sticky top-0 left-0 right-0 z-50 px-4 md:px-6 select-none"
     >
-      <div className="max-w-7xl mx-auto h-20 flex items-center justify-between gap-4">
+      <div className="container mx-auto h-20 flex items-center justify-between gap-4">
         <div className="flex items-center gap-6">
           <MotionLink
             href="/"
