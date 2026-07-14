@@ -22,12 +22,13 @@ interface AvatarUserDropdownProps {
 const AvatarUserDropdown = ({
   variant = "navbar",
 }: AvatarUserDropdownProps) => {
-  const { data: session } = useSession();
+  const { data: session,refetch: refech } = useSession();
   const user = session?.user;
 
   const handleSignOut = async (): Promise<void> => {
     try {
       await authClient.signOut();
+      refech()
     } catch {
       console.log("Failed to log out");
     }

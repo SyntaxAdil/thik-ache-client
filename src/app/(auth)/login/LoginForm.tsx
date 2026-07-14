@@ -76,37 +76,37 @@ export default function LoginForm() {
     }
   };
 
-  const handleDemoLogin = async (role: "requester" | "helper") => {
-    const credentials = {
-      email: "demo@thikache.app",
-      password: "Demo@1234",
-    };
-
-    setValue("email", credentials.email);
-    setValue("password", credentials.password);
-
-    try {
-      const { error } = await signIn.email(
-        {
-          email: credentials.email,
-          password: credentials.password,
-          callbackURL: "/",
-        },
-        {
-          onSuccess: () => {
-            toast.success(`Logged in as demo ${role}`);
-            router.push("/");
-          },
-        },
-      );
-      if (error) {
-        toast.error(error.message || "Demo login failed");
-      }
-    } catch (error) {
-      toast.error("Internal Server Error!");
-      console.error(error);
-    }
+  const handleDemoLogin = async (role: "user" | "admin") => {
+  const credentials = {
+    email: role === "admin" ? "admin@thikache.com" : "demo@thikache.app",
+    password: role === "admin" ? "admin@001" : "Demo@1234",
   };
+
+  setValue("email", credentials.email);
+  setValue("password", credentials.password);
+
+  try {
+    const { error } = await signIn.email(
+      {
+        email: credentials.email,
+        password: credentials.password,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Logged in as demo ${role}`);
+          router.push("/");
+        },
+      }
+    );
+    if (error) {
+      toast.error(error.message || "Demo login failed");
+    }
+  } catch (error) {
+    toast.error("Internal Server Error!");
+    console.error(error);
+  }
+};
 
   return (
     <motion.form
@@ -211,14 +211,22 @@ export default function LoginForm() {
           <div className="flex-1 border-t border-border"></div>
         </div>
 
-        <div className=" w-full">
+        <div className=" flex gap-2 w-full">
           <Button
             type="button"
-            onClick={() => handleDemoLogin("requester")}
+            onClick={() => handleDemoLogin("user")}
             variant="outline"
-            className="w-full h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
+            className="w-1/2 h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
           >
-            Demo Login to ThikAche
+            Demo Login as User
+          </Button>
+          <Button
+            type="button"
+            onClick={() => handleDemoLogin("admin")}
+            variant="outline"
+            className="w-1/2 h-10 rounded-lg border-amber-500/40 text-amber-500 hover:bg-amber-500/10 text-xs font-medium transition-colors"
+          >
+            Demo Login as Admin
           </Button>
         </div>
 
