@@ -44,7 +44,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/30 selection:text-foreground">
         <SmoothScrollProvider>
           <main className="flex-1 flex flex-col">{children}</main>
-          {/* <SmoothCursor></SmoothCursor> */}
+          <SmoothCursor></SmoothCursor>
           <Toaster
             position="top-center"
             expand={false}

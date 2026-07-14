@@ -13,12 +13,15 @@ import { motion } from "framer-motion";
 import { useSession, authClient } from "../../lib/auth/auth-client";
 import { LayoutDashboard, User as UserIcon, LogOut, Home } from "lucide-react";
 import Link from "next/link";
+import { SmoothScrollToggle } from "../ui/smooth-cursor";
 
 interface AvatarUserDropdownProps {
   variant?: "navbar" | "dashboard";
 }
 
-const AvatarUserDropdown = ({ variant = "navbar" }: AvatarUserDropdownProps) => {
+const AvatarUserDropdown = ({
+  variant = "navbar",
+}: AvatarUserDropdownProps) => {
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -46,7 +49,7 @@ const AvatarUserDropdown = ({ variant = "navbar" }: AvatarUserDropdownProps) => 
           </Avatar>
         </motion.div>
       </DropdownMenuTrigger>
-      
+
       <DropdownMenuContent
         align="end"
         className="w-56 bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl p-1.5 mt-2 shadow-2xl"
@@ -59,13 +62,16 @@ const AvatarUserDropdown = ({ variant = "navbar" }: AvatarUserDropdownProps) => 
             {user?.email}
           </span>
         </DropdownMenuLabel>
-        
+
         <DropdownMenuSeparator className="bg-zinc-900 my-1" />
 
         {/* Dynamic Route based on variant */}
         {variant === "navbar" ? (
           <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
-            <Link href="/dashboard" className="flex w-full items-center gap-2.5">
+            <Link
+              href="/dashboard"
+              className="flex w-full items-center gap-2.5"
+            >
               <LayoutDashboard className="w-4 h-4 text-zinc-400" />
               Dashboard
             </Link>
@@ -81,13 +87,16 @@ const AvatarUserDropdown = ({ variant = "navbar" }: AvatarUserDropdownProps) => 
 
         <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
           <Link href="/profile" className="flex w-full items-center gap-2.5">
-            <UserIcon className="w-4 h-4 text-zinc-400" />
+            <UserIcon className="w-4 h-4 text-zinc-400 " />
             My Profile
           </Link>
         </DropdownMenuItem>
-        
+        <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer text-xs">
+          <SmoothScrollToggle />
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator className="bg-zinc-900 my-1" />
-        
+
         <DropdownMenuItem
           onClick={handleSignOut}
           className="focus:bg-red-950/40 focus:text-red-400 text-red-500 rounded-lg cursor-pointer p-2 text-xs flex items-center gap-2.5 transition-colors duration-150"
