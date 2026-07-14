@@ -2,8 +2,8 @@ import { apiRequest } from "./api-client";
 import type { Review, CreateReviewPayload } from "@/lib/api-types";
 
 export const reviewService = {
-  getReviewsForUser: (userId: string) =>
-    apiRequest<Review[]>(`/reviews/user/${userId}`),
+  getReviewsByRequestId: (requestId: string) =>
+    apiRequest<Review[]>(`/reviews/request/${requestId}`),
 
   createReview: (payload: CreateReviewPayload) =>
     apiRequest<Review>(`/reviews`, {

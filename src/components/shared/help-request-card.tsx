@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MapPin, Calendar, Trash2, CheckCircle2, Ban, MoreVertical, ArrowRight, Eye } from "lucide-react";
+import { MapPin, Calendar, Trash2, CheckCircle2, Ban, MoreVertical, Eye } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { helpRequestService } from "@/services/help-request.service";
@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
+import { ReviewDialog } from "../review-dialog";
+
 
 interface HelpRequestCardProps {
   _id: string;
@@ -62,6 +64,7 @@ export function HelpRequestCard({
   const [isPending, setIsPending] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
   const isOwner = currentUserId === user._id;
 
   useEffect(() => {
@@ -81,6 +84,7 @@ export function HelpRequestCard({
       if (action === "complete") {
         await helpRequestService.markComplete(_id);
         toast.success("Request marked as completed");
+        setIsReviewOpen(true);
       } else if (action === "cancel") {
         await helpRequestService.cancelHelpRequest(_id);
         toast.success("Request cancelled successfully");
@@ -189,6 +193,13 @@ export function HelpRequestCard({
           </div>
         </div>
       </div>
+
+      <ReviewDialog 
+        open={isReviewOpen} 
+        onOpenChange={setIsReviewOpen} 
+        requestId={_id} 
+        revieweeId={user._id} 
+      />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-zinc-950 border border-zinc-900 text-zinc-100 rounded-2xl">

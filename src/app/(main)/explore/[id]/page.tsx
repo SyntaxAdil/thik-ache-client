@@ -21,7 +21,7 @@ import { helpRequestService } from "../../../../services/help-request.service";
 interface PosterProfile {
   _id: string;
   name: string;
-  avgRatingAsRequester?: number;
+  avgRating?: number;
   completedCount?: number;
   avatarUrl?: string;
 }
@@ -61,6 +61,18 @@ interface UserReview {
   direction: "requester_to_helper" | "helper_to_requester";
 }
 
+interface RawReview {
+  _id: string;
+  request: string;
+  reviewer: string | { name: string; avatarUrl?: string; role?: string };
+  reviewee: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 interface RelatedRequestCard {
   _id: string;
   title: string;
@@ -85,10 +97,9 @@ interface RelatedBackendItem {
   _id: string;
   title?: string;
   location?: {
-    
     coordinates?: [number, number];
   };
-  areaLabel?: string; 
+  areaLabel?: string;
   budget?: number;
   isPaid?: boolean;
   category?: string;
@@ -128,13 +139,89 @@ export default async function RequestDetailsPage({ params }: PageProps) {
       if ("data" in detailsResponse && detailsResponse.data && typeof detailsResponse.data === "object") {
         const nestedData = detailsResponse.data as Record<string, unknown>;
         requestData = nestedData as unknown as HelpRequestData;
-        reviews = (nestedData.reviews as UserReview[]) || [];
+        
+        const rawReviews = (nestedData.reviews as RawReview[]) || [];
+        reviews = rawReviews.map((rev) => {
+          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.name || 'Unknown User'
+            : 'Unknown User';
+          
+          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.avatarUrl
+            : undefined;
+          
+          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.role || 'User'
+            : 'User';
+
+          return {
+            _id: rev._id,
+            reviewer: {
+              name: reviewerName,
+              role: reviewerRole,
+              avatarUrl: reviewerAvatar,
+            },
+            rating: rev.rating,
+            comment: rev.comment,
+            direction: "helper_to_requester" as const,
+          };
+        });
       } else if ("requestData" in detailsResponse && detailsResponse.requestData && typeof detailsResponse.requestData === "object") {
         requestData = detailsResponse.requestData as unknown as HelpRequestData;
-        reviews = (detailsResponse.reviews as UserReview[]) || [];
+        const rawReviews = (detailsResponse.reviews as RawReview[]) || [];
+        reviews = rawReviews.map((rev) => {
+          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.name || 'Unknown User'
+            : 'Unknown User';
+          
+          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.avatarUrl
+            : undefined;
+          
+          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.role || 'User'
+            : 'User';
+
+          return {
+            _id: rev._id,
+            reviewer: {
+              name: reviewerName,
+              role: reviewerRole,
+              avatarUrl: reviewerAvatar,
+            },
+            rating: rev.rating,
+            comment: rev.comment,
+            direction: "helper_to_requester" as const,
+          };
+        });
       } else {
         requestData = detailsResponse as unknown as HelpRequestData;
-        reviews = (detailsResponse.reviews as UserReview[]) || [];
+        const rawReviews = (detailsResponse.reviews as RawReview[]) || [];
+        reviews = rawReviews.map((rev) => {
+          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.name || 'Unknown User'
+            : 'Unknown User';
+          
+          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.avatarUrl
+            : undefined;
+          
+          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
+            ? rev.reviewer.role || 'User'
+            : 'User';
+
+          return {
+            _id: rev._id,
+            reviewer: {
+              name: reviewerName,
+              role: reviewerRole,
+              avatarUrl: reviewerAvatar,
+            },
+            rating: rev.rating,
+            comment: rev.comment,
+            direction: "helper_to_requester" as const,
+          };
+        });
       }
     }
 
@@ -142,8 +229,7 @@ export default async function RequestDetailsPage({ params }: PageProps) {
       relatedRequests = relatedResponse.map((req) => ({
         _id: req._id,
         title: req.title || "",
-
-        areaLabel:  req.areaLabel || "Unknown Location",
+        areaLabel: req.areaLabel || "Unknown Location",
         budget: req.budget || 0,
         isPaid: req.isPaid || false,
         category: req.category || "",
@@ -165,6 +251,8 @@ export default async function RequestDetailsPage({ params }: PageProps) {
     notFound();
   }
 
+  console.log("Final reviews:", reviews);
+
   const statusColors: Record<string, string> = {
     open: "bg-zinc-900 border-zinc-850 text-zinc-300",
     matched: "bg-primary/10 border-primary/20 text-primary",
@@ -181,7 +269,6 @@ export default async function RequestDetailsPage({ params }: PageProps) {
     cancelled: "Cancelled",
   };
 
-  //
   const resolvedAreaLabel = requestData?.areaLabel || "Unknown Location";
   
   const coordinates = requestData.location?.coordinates || [90.3891, 23.8225];
@@ -466,7 +553,7 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                   <div className="flex items-center gap-0.5 text-xs font-bold text-amber-400">
                     <Star className="h-3.5 w-3.5 fill-current" />
                     <span>
-                      {posterProfile?.avgRatingAsRequester?.toFixed(1) || "0.0"}
+                      {posterProfile?.avgRating?.toFixed(1) || "0.0"}
                     </span>
                   </div>
                 </div>
