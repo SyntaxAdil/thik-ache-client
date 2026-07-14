@@ -15,7 +15,7 @@ export default function DashboardLayout({
           <DashboardSidebar />
 
           <main className=" w-full p-4">
-            <DashboardHeader title="Dashboard" />
+            <DashboardHeader  />
             <section>{children}</section>
           </main>
         </SidebarProvider>

@@ -11,6 +11,7 @@ import {
 } from "../../ui/breadcrumb";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import AvatarUserDropdown from "../../shared/avatar-dropdown";
 import DashboardNotification from "./dashboard-notification";
 
@@ -26,76 +27,207 @@ export default function DashboardHeader({
   
   const lastSegment = segments[segments.length - 1];
   
-  // Check if the last segment is a number (ObjectId or numeric ID)
-  const isNumericId = lastSegment ? /^[0-9a-fA-F]{24}$/.test(lastSegment) || /^\d+$/.test(lastSegment) : false;
+  const isObjectId = (str: string): boolean => {
+    return /^[0-9a-fA-F]{24}$/.test(str);
+  };
+
+  const isNumericId = (str: string): boolean => {
+    return /^\d+$/.test(str);
+  };
+
+  const isId = (str: string): boolean => {
+    return isObjectId(str) || isNumericId(str);
+  };
+
+  const capitalize = (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
+  const specialSegments = ["me", "profile", "settings", "account", "reviews", "users", "admin", "dashboard", "tasks", "help", "support"];
   
-  let displayTitle = title || "Dashboard";
+  const isSpecialSegment = (segment: string): boolean => {
+    return specialSegments.includes(segment.toLowerCase());
+  };
+
+  let displayTitle = "Dashboard";
   
-  if (!title) {
-    if (isNumericId && segments.length > 1) {
-      // If it's an ID, use the previous segment as the title
+  if (title) {
+    displayTitle = title;
+  } else if (lastSegment) {
+    if (isId(lastSegment) && segments.length > 1 && !isSpecialSegment(lastSegment)) {
       const previousSegment = segments[segments.length - 2];
-      displayTitle = previousSegment
-        ? previousSegment.charAt(0).toUpperCase() + previousSegment.slice(1)
-        : "Dashboard";
-    } else if (lastSegment) {
-      // Otherwise format the last segment
-      displayTitle = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+      displayTitle = previousSegment ? capitalize(previousSegment) : "Dashboard";
     } else {
-      displayTitle = "Dashboard";
+      displayTitle = capitalize(lastSegment);
     }
   }
 
-  // Format segment for breadcrumb display
-  const formatSegment = (segment: string): string => {
-    // Check if it's a MongoDB ObjectId (24 hex chars) or numeric ID
-    if (/^[0-9a-fA-F]{24}$/.test(segment) || /^\d+$/.test(segment)) {
-      return "Profile";
+  const formatSegment = (segment: string, index: number): string => {
+    const isLast = index === segments.length - 1;
+    
+    if (isSpecialSegment(segment)) {
+      return capitalize(segment);
     }
-    return segment.charAt(0).toUpperCase() + segment.slice(1);
+    
+    if (isId(segment)) {
+      if (isLast) {
+        return "Profile";
+      }
+      return segment;
+    }
+    
+    return capitalize(segment);
+  };
+
+  const headerVariants: Variants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.4, 
+        ease: "easeOut",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const titleVariants: Variants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
+    }
+  };
+
+  const breadcrumbVariants: Variants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.3, ease: "easeOut", delay: 0.1 }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.2, ease: "easeOut" }
+    }
+  };
+
+  const actionsVariants: Variants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.4, ease: "easeOut", delay: 0.2 }
+    }
+  };
+
+  const breadcrumbItemVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const hoverTapVariants = {
+    hover: { scale: 1.05 },
+    tap: { scale: 0.95 }
+  };
+
+  const iconHoverVariants = {
+    hover: { scale: 1.1 },
+    tap: { scale: 0.9 }
   };
 
   return (
-    <nav className="flex items-center justify-between gap-4 pe-4 py-2 border-b border-zinc-900 mb-4 select-none sticky top-0 left-0 right-0 z-50 bg-zinc-950">
+    <motion.nav
+      initial="hidden"
+      animate="visible"
+      variants={headerVariants}
+      className="flex items-center justify-between gap-4 pe-4 py-2 border-b border-zinc-900 mb-4 select-none sticky top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl"
+    >
       <div className="flex items-center gap-6">
-        <h1 className="hidden md:block text-2xl font-bold tracking-tight text-white">
+        <motion.h1 
+          variants={titleVariants}
+          className="hidden md:block text-2xl font-bold tracking-tight text-white"
+        >
           {displayTitle}
-        </h1>
+        </motion.h1>
 
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink render={<Link href="/" />}>Home</BreadcrumbLink>
-            </BreadcrumbItem>
+        <motion.div variants={breadcrumbVariants}>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink render={<Link href="/" />}>Home</BreadcrumbLink>
+              </BreadcrumbItem>
 
-            {segments.map((segment, index) => {
-              const href = `/${segments.slice(0, index + 1).join("/")}`;
-              const isLast = index === segments.length - 1;
-              const formattedSegment = formatSegment(segment);
+              {segments.map((segment, index) => {
+                const href = `/${segments.slice(0, index + 1).join("/")}`;
+                const isLast = index === segments.length - 1;
+                const formattedSegment = formatSegment(segment, index);
 
-              return (
-                <React.Fragment key={href}>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    {isLast ? (
-                      <BreadcrumbPage>{formattedSegment}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink render={<Link href={href} />}>
-                        {formattedSegment}
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </React.Fragment>
-              );
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
+                return (
+                  <React.Fragment key={href}>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <motion.div
+                          variants={breadcrumbItemVariants}
+                          initial="hidden"
+                          animate="visible"
+                          custom={index}
+                          transition={{ delay: 0.1 + index * 0.05 }}
+                        >
+                          <BreadcrumbPage>{formattedSegment}</BreadcrumbPage>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          variants={itemVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          custom={index}
+                        >
+                          <BreadcrumbLink render={<Link href={href} />}>
+                            {formattedSegment}
+                          </BreadcrumbLink>
+                        </motion.div>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </motion.div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <DashboardNotification />
-        <AvatarUserDropdown variant="dashboard" />
-      </div>
-    </nav>
+      <motion.div 
+        variants={actionsVariants}
+        className="flex items-center gap-3"
+      >
+        <motion.div
+          whileHover="hover"
+          whileTap="tap"
+          variants={iconHoverVariants}
+        >
+          <DashboardNotification />
+        </motion.div>
+        <motion.div
+          whileHover="hover"
+          whileTap="tap"
+          variants={iconHoverVariants}
+        >
+          <AvatarUserDropdown variant="dashboard" />
+        </motion.div>
+      </motion.div>
+    </motion.nav>
   );
 }

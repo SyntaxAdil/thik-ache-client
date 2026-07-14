@@ -42,7 +42,7 @@ const Home = async () => {
     headers: await headers(),
   });
   const user = session?.user;
-  const userArea = user?.area || "Dhanmondi";
+  const userArea = user?.area || "Mirpur";
 
   let nearbyRequests: NearbyRequest[] = [];
   let reviews: CommunityReview[] = [];

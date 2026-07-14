@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "../../shared/logo/logo";
 import { authClient, useSession } from "../../../lib/auth/auth-client";
 
@@ -42,9 +42,10 @@ interface MenuSection {
 
 export default function DashboardSidebar(): React.JSX.Element {
   const pathname = usePathname();
+  const router = useRouter();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-  const { data: session, isPending } = useSession();
+  const { data: session, isPending, refetch: refetch } = useSession();
 
   const userClient = session?.user;
   const userRole =
@@ -63,7 +64,7 @@ export default function DashboardSidebar(): React.JSX.Element {
   const menuConfig: MenuSection[] = [
     {
       group: "Dashboard",
-      roles: ["user","admin"],
+      roles: ["user", "admin"],
       items: [{ title: "Overview", icon: LayoutDashboard, href: "/dashboard" }],
     },
     {
@@ -107,6 +108,8 @@ export default function DashboardSidebar(): React.JSX.Element {
 
   const handleSignOut = async (): Promise<void> => {
     await authClient.signOut();
+    refetch();
+    router.push("/");
   };
 
   return (
@@ -152,7 +155,7 @@ export default function DashboardSidebar(): React.JSX.Element {
       <SidebarContent
         className={`mt-4 space-y-5 ${isCollapsed ? "px-2" : "px-4"}`}
       >
-        {userRole === "admin" && (
+        {userRole === "admin" && !isCollapsed && (
           <div className="mt-1 ms-2 self-start px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-xs  font-black uppercase tracking-widest text-indigo-400 shadow-[0_0_10px_rgba(79,70,229,0.1)]">
             Admin Panel
           </div>

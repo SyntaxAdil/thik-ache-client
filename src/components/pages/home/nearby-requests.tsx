@@ -24,7 +24,7 @@ interface NearbyRequest {
 }
 
 interface NearbyRequestsSectionProps {
-  userArea: string;
+  userArea?: string;
   initialRequests?: NearbyRequest[];
 }
 
@@ -40,6 +40,9 @@ export function NearbyRequestsSection({
   userArea,
   initialRequests = [],
 }: NearbyRequestsSectionProps) {
+  // Use default "Mirpur" if userArea is not provided
+  const displayArea = userArea || "Mirpur";
+  
   const [requests, setRequests] = useState<NearbyRequest[]>(initialRequests);
   const [loading, setLoading] = useState(initialRequests.length === 0);
 
@@ -64,7 +67,7 @@ export function NearbyRequestsSection({
     const fetchRequests = async () => {
       try {
         const response = await helpRequestService.getHelpRequests({
-          area: userArea,
+          area: displayArea,
           limit: 4,
         });
 
@@ -77,7 +80,6 @@ export function NearbyRequestsSection({
           }
         }
         
-        // Filter to only show open and matched requests
         const filteredItems = items.filter(
           (item) => item.status === "open" || item.status === "matched"
         );
@@ -106,7 +108,7 @@ export function NearbyRequestsSection({
     return () => {
       isMounted = false;
     };
-  }, [userArea, initialRequests]);
+  }, [displayArea, initialRequests]);
 
   if (loading) {
     return (
@@ -114,7 +116,7 @@ export function NearbyRequestsSection({
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
             <SectionHeading
-              title={`Nearby in ${userArea}`}
+              title={`Nearby in ${displayArea}`}
               subtitle="Real-time requests from your neighborhood."
               align="left"
               className="mb-0 max-w-xl"
@@ -145,7 +147,7 @@ export function NearbyRequestsSection({
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
           <SectionHeading
-            title={`Nearby in ${userArea}`}
+            title={`Nearby in ${displayArea}`}
             subtitle="Real-time requests from your neighborhood."
             align="left"
             className="mb-0 max-w-xl"
@@ -161,7 +163,7 @@ export function NearbyRequestsSection({
 
         {requests.length === 0 ? (
           <div className="text-center py-12 text-zinc-500">
-            <p>No active requests in your area right now.</p>
+            <p>No active requests in {displayArea} right now.</p>
             <p className="text-sm mt-2">Check back later or expand your search area.</p>
           </div>
         ) : (

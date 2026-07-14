@@ -87,7 +87,7 @@ const AvatarUserDropdown = ({
         )}
 
         <DropdownMenuItem className="focus:bg-zinc-900 focus:text-white rounded-lg cursor-pointer p-2 text-xs">
-          <Link href="/profile" className="flex w-full items-center gap-2.5">
+          <Link href="/dashboard/profile" className="flex w-full items-center gap-2.5">
             <UserIcon className="w-4 h-4 text-zinc-400 " />
             My Profile
           </Link>
