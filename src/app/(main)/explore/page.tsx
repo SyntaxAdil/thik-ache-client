@@ -158,16 +158,31 @@ export default async function ExplorePage({ searchParams }: PageProps) {
   return (
     <main className="min-h-screen w-full bg-black text-zinc-100 py-16 tracking-tight">
       <div className="container mx-auto px-4 lg:px-0 space-y-10">
-        <ExploreFilters />
 
-        <div>
-          <h1 className="text-3xl font-extrabold text-white">
-            Explore Requests {currentArea ? `near ${currentArea}` : ""}
-          </h1>
-          <p className="text-xs text-zinc-500 mt-1.5 font-medium">
-            {totalItems} active {totalItems === 1 ? "request" : "requests"} looking for help
-          </p>
+
+      
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="px-2.5 py-0.5 text-2xs font-bold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              Help Requests
+            </span>
+            <span className="text-2xs font-semibold text-zinc-600">
+              {currentArea ? `Near ${currentArea}` : "All Areas"}
+            </span>
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-white tracking-tight">
+              Explore Requests {currentArea ? `near ${currentArea}` : ""}
+            </h1>
+            <p className="text-xs text-zinc-500 font-medium mt-1">
+              {totalItems} active {totalItems === 1 ? "request" : "requests"} looking for help
+            </p>
+          </div>
+          <hr className="border-zinc-900 w-16 border-t-2 pt-2" />
         </div>
+
+
+                <ExploreFilters />
 
         {paginatedData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">

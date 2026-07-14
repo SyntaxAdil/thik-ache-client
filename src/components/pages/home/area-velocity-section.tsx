@@ -2,12 +2,13 @@
 
 import React from "react";
 import { MapPin } from "lucide-react";
-import { DHAKA_AREAS } from "../dashboard/requests/HelpRequestForm";
+
 import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from "../../ui/scroll-based-velocity";
 import { SectionHeading } from "../../ui/section-heading";
+import { DHAKA_AREAS, DhakaArea } from "../../../assets/dhaka-top-areas";
 
 export function AreaVelocitySection() {
   return (
@@ -23,7 +24,7 @@ export function AreaVelocitySection() {
       <div className="relative flex w-full flex-col items-center justify-center">
         <ScrollVelocityContainer className="text-xl font-medium tracking-tight text-white md:text-3xl">
           <ScrollVelocityRow baseVelocity={0.5} direction={1}>
-            {DHAKA_AREAS.map((area) => (
+            {DHAKA_AREAS.map((area: DhakaArea) => (
               <div key={area} className="flex items-center gap-2 px-6">
                 <MapPin className="h-4 w-4 text-primary shrink-0" />
                 <span className="whitespace-nowrap uppercase opacity-70">

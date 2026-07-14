@@ -1,3 +1,4 @@
+// components/forms/help-request-form.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -18,41 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DHAKA_AREAS, DhakaArea } from "../../../../assets/dhaka-top-areas";
 import { CATEGORIES } from "../../explore/explore-filters";
 
-export const DHAKA_AREAS = [
-  "Dhanmondi",
-  "Gulshan",
-  "Banani",
-  "Baridhara",
-  "Motijheel",
-  "Ramna",
-  "Mirpur",
-  "Uttara",
-  "Mohammadpur",
-  "Bashundhara",
-  "Rampura",
-  "Badda",
-  "Khilgaon",
-  "Malibagh",
-  "Shantinagar",
-  "Wari",
-  "Old Dhaka",
-  "Lalbagh",
-  "Chawkbazar",
-  "Mohakhali",
-  "Tejgaon",
-  "Farmgate",
-  "Kafrul",
-  "Cantonment",
-  "Shyamoli",
-  "Adabor",
-  "Jatrabari",
-  "Demra",
-  "Savar",
-] as const;
 
-export type DhakaArea = (typeof DHAKA_AREAS)[number];
+
+
+
 
 type RequestCategory =
   | "tech"
@@ -99,7 +72,7 @@ export function HelpRequestForm() {
       latitude: "23.8103",
       longitude: "90.4125",
       isPaid: false,
-      budget: "0",
+      budget: "",
       preferredTime: "",
     },
   });
@@ -173,30 +146,37 @@ export function HelpRequestForm() {
   const onSubmit = async (data: FormValues) => {
     setIsPending(true);
 
-    const payload = {
-      title: data.title,
-      shortDescription: data.shortDescription,
-      fullDescription: data.fullDescription,
-      category: data.category,
-      areaLabel: data.areaLabel,
-      coordinates: [
-        parseFloat(data.longitude) || 90.4125,
-        parseFloat(data.latitude) || 23.8103,
-      ] as [number, number],
-      budget: data.isPaid ? parseFloat(data.budget) || 0 : undefined,
-      isPaid: data.isPaid,
-      preferredTime: data.preferredTime || undefined,
-      imageUrl: imageUrl || undefined,
-    };
+    try {
+      const payload = {
+        title: data.title.trim(),
+        shortDescription: data.shortDescription.trim(),
+        fullDescription: data.fullDescription.trim(),
+        category: data.category,
+        areaLabel: data.areaLabel,
+        coordinates: [
+          parseFloat(data.longitude) || 90.4125,
+          parseFloat(data.latitude) || 23.8103,
+        ] as [number, number],
+        budget: data.isPaid ? parseFloat(data.budget) || 0 : undefined,
+        isPaid: data.isPaid,
+        preferredTime: data.preferredTime || undefined,
+        imageUrl: imageUrl || undefined,
+      };
 
-    const result = await createHelpRequestAction(payload);
-    setIsPending(false);
+      const result = await createHelpRequestAction(payload);
 
-    if (result.success) {
-      toast.success("Help request created successfully.");
-      router.push("/dashboard/requests");
-    } else {
-      toast.error(result.error);
+      if (result.success) {
+        toast.success("Help request created successfully.");
+        router.push("/dashboard/requests");
+        router.refresh();
+      } else {
+        toast.error(result.error || "Failed to create request");
+        setIsPending(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An unexpected error occurred");
+      setIsPending(false);
     }
   };
 
@@ -318,7 +298,7 @@ export function HelpRequestForm() {
                   <SelectValue placeholder="Select your area" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-60">
-                  {DHAKA_AREAS.map((area) => (
+                  {DHAKA_AREAS.map((area: DhakaArea) => (
                     <SelectItem key={area} value={area}>
                       {area}
                     </SelectItem>

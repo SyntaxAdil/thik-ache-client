@@ -6,13 +6,7 @@ export type RequestStatus =
   | "completed"
   | "cancelled";
 
-export type RequestCategory =
-  | "tech"
-  | "tutoring"
-  | "errand"
-  | "moving"
-  | "repair"
-  | "other";
+
 
 export interface UserSummary {
   _id: string;
@@ -77,6 +71,26 @@ export interface PaginatedHelpRequests {
 
 // ---- Request payload types ----
 
+export type RequestCategory = 
+  | "plumbing"
+  | "electrical"
+  | "carpentry"
+  | "painting"
+  | "cleaning"
+  | "tech_support"
+  | "web_dev"
+  | "graphics_design"
+  | "data_entry"
+  | "delivery"
+  | "grocery_shopping"
+  | "moving_help"
+  | "tutoring"
+  | "language_translation"
+  | "pet_care"
+  | "medical_escort"
+  | "fitness_coaching"
+  | "other";
+
 export interface CreateHelpRequestPayload {
   title: string;
   shortDescription: string;
@@ -85,7 +99,7 @@ export interface CreateHelpRequestPayload {
   areaLabel: string;
   coordinates: [number, number];
   budget?: number;
-  isPaid?: boolean;
+  isPaid: boolean;
   preferredTime?: string;
   imageUrl?: string;
 }
