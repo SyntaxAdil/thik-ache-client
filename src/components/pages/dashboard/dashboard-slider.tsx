@@ -63,12 +63,12 @@ export default function DashboardSidebar(): React.JSX.Element {
   const menuConfig: MenuSection[] = [
     {
       group: "Dashboard",
-      roles: ["user", "admin"],
+      roles: ["user","admin"],
       items: [{ title: "Overview", icon: LayoutDashboard, href: "/dashboard" }],
     },
     {
       group: "Main Menu",
-      roles: ["user", "admin"],
+      roles: ["user"],
       items: [
         { title: "My Tasks", icon: ListChecks, href: "/dashboard/tasks" },
         { title: "My Profile", icon: User, href: "/dashboard/profile" },
@@ -76,21 +76,29 @@ export default function DashboardSidebar(): React.JSX.Element {
     },
     {
       group: "Activity",
-      roles: ["user", "admin"],
+      roles: ["user"],
       items: [
         {
           title: "Posted Requests",
           icon: ListChecks,
           href: "/dashboard/requests",
         },
-        { title: "Post a Request", icon: PlusCircle, href: "/dashboard/requests/add" },
+        {
+          title: "Post a Request",
+          icon: PlusCircle,
+          href: "/dashboard/requests/add",
+        },
       ],
+    },
+    {
+      group: "Profile & Settings",
+      roles: ["admin"],
+      items: [{ title: "My Profile", icon: User, href: "/dashboard/profile" }],
     },
     {
       group: "Administration",
       roles: ["admin"],
       items: [
-        { title: "Admin Overview", icon: ShieldCheck, href: "/dashboard" },
         { title: "All Users", icon: Users2, href: "/dashboard/users" },
         { title: "Reviews & Ratings", icon: Star, href: "/dashboard/reviews" },
       ],
@@ -120,11 +128,6 @@ export default function DashboardSidebar(): React.JSX.Element {
                   ThikAche
                 </span>
               </Link>
-              {userRole === "admin" && (
-                <div className="mt-1 self-start px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black uppercase tracking-widest text-indigo-400 shadow-[0_0_10px_rgba(79,70,229,0.1)]">
-                  Admin Panel
-                </div>
-              )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <SidebarTrigger className="size-8 rounded-lg bg-zinc-900 border border-zinc-800 shadow-sm text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800" />
@@ -149,6 +152,11 @@ export default function DashboardSidebar(): React.JSX.Element {
       <SidebarContent
         className={`mt-4 space-y-5 ${isCollapsed ? "px-2" : "px-4"}`}
       >
+        {userRole === "admin" && (
+          <div className="mt-1 ms-2 self-start px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-xs  font-black uppercase tracking-widest text-indigo-400 shadow-[0_0_10px_rgba(79,70,229,0.1)]">
+            Admin Panel
+          </div>
+        )}
         {menuConfig.map((section) => {
           if (!section.roles.includes(userRole)) return null;
 
