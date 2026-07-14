@@ -1,66 +1,145 @@
+// components/pages/home/nearby-requests.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { HelpRequestCard } from "../../shared/help-request-card";
 import Link from "next/link";
+import { helpRequestService } from "@/services/help-request.service";
 
-const MOCK_NEARBY_REQUESTS = [
-  {
-    _id: "601a8d3a2d2c0c1c2e1d",
-    title: "Need help fixing my laptop — won't turn on",
-    location: "Road 27, Dhanmondi",
-    amount: 600,
-    status: "OPEN" as const,
-    user: {
-      name: "S. Ahmed",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-      timeAgo: "2m ago",
-    },
-  },
-  {
-    _id: "601a8d3a2d2c0c1c2e2d",
-    title: "Looking for someone to help move a sofa this evening",
-    location: "Satmasjid Road, Dhanmondi",
-    amount: 450,
-    status: "IN_PROGRESS" as const,
-    user: {
-      name: "R. Khan",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-      timeAgo: "15m ago",
-    },
-  },
-  {
-    _id: "601a8d3a2d2c0c1c2e3d",
-    title: "Need a spare gas cylinder until tomorrow morning",
-    location: "Road 12A, Dhanmondi",
-    amount: 300,
-    status: "OPEN" as const,
-    user: {
-      name: "M. Rahman",
-      avatarUrl: "",
-      timeAgo: "30m ago",
-    },
-  },
-  {
-    _id: "601a8d3a2d2c0c1c2e4d",
-    title: "Can someone water my plants while I'm away?",
-    location: "Road 4, Dhanmondi",
-    amount: 500,
-    status: "CLOSED" as const,
-    user: {
-      name: "N. Islam",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-      timeAgo: "1h ago",
-    },
-  },
-];
+interface NearbyRequest {
+  _id: string;
+  title: string;
+  areaLabel: string;
+  budget?: number;
+  isPaid?: boolean;
+  status: "open" | "matched" | "in_progress" | "completed" | "cancelled";
+  postedBy: {
+    _id: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  createdAt?: string;
+}
 
-export function NearbyRequestsSection({userArea}: {userArea: string}) {
+interface NearbyRequestsSectionProps {
+  userArea: string;
+  initialRequests?: NearbyRequest[];
+}
+
+type RequestStatus = "open" | "matched" | "in_progress" | "completed" | "cancelled";
+
+const VALID_STATUSES: RequestStatus[] = ["open", "matched", "in_progress", "completed", "cancelled"];
+
+function isValidStatus(status: string): status is RequestStatus {
+  return VALID_STATUSES.includes(status as RequestStatus);
+}
+
+export function NearbyRequestsSection({
+  userArea,
+  initialRequests = [],
+}: NearbyRequestsSectionProps) {
+  const [requests, setRequests] = useState<NearbyRequest[]>(initialRequests);
+  const [loading, setLoading] = useState(initialRequests.length === 0);
+
+  const formatTimeAgo = useMemo(() => {
+    return (date?: string) => {
+      if (!date) return "Recently";
+      const now = new Date();
+      const diff = now.getTime() - new Date(date).getTime();
+      const minutes = Math.floor(diff / 60000);
+      if (minutes < 1) return "Just now";
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchRequests = async () => {
+      try {
+        const response = await helpRequestService.getHelpRequests({
+          area: userArea,
+          limit: 4,
+        });
+
+        let items: NearbyRequest[] = [];
+        if (response && typeof response === "object") {
+          if ("items" in response && Array.isArray(response.items)) {
+            items = response.items as NearbyRequest[];
+          } else if (Array.isArray(response)) {
+            items = response as NearbyRequest[];
+          }
+        }
+        
+        // Filter to only show open and matched requests
+        const filteredItems = items.filter(
+          (item) => item.status === "open" || item.status === "matched"
+        );
+        
+        if (isMounted) {
+          setRequests(filteredItems);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Error fetching nearby requests:", err);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (initialRequests.length > 0) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 0);
+      return;
+    }
+
+    fetchRequests();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userArea, initialRequests]);
+
+  if (loading) {
+    return (
+      <section className="py-20 w-full bg-black">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <SectionHeading
+              title={`Nearby in ${userArea}`}
+              subtitle="Real-time requests from your neighborhood."
+              align="left"
+              className="mb-0 max-w-xl"
+            />
+            <Link
+              href="/explore"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-indigo-400 transition-colors group self-start md:self-auto pb-2"
+            >
+              View all requests
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="h-48 bg-zinc-900/50 animate-pulse rounded-xl"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 w-full bg-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,26 +150,48 @@ export function NearbyRequestsSection({userArea}: {userArea: string}) {
             align="left"
             className="mb-0 max-w-xl"
           />
-
-          <Link href="/explore" className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-indigo-400 transition-colors group self-start md:self-auto pb-2">
+          <Link
+            href="/explore"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-indigo-400 transition-colors group self-start md:self-auto pb-2"
+          >
             View all requests
             <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {MOCK_NEARBY_REQUESTS.map((request, index) => (
-            <HelpRequestCard
-              key={index}
-              _id={request._id}
-              title={request.title}
-              location={request.location}
-              amount={request.amount}
-              status={request.status}
-              user={request.user}
-            />
-          ))}
-        </div>
+        {requests.length === 0 ? (
+          <div className="text-center py-12 text-zinc-500">
+            <p>No active requests in your area right now.</p>
+            <p className="text-sm mt-2">Check back later or expand your search area.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {requests.slice(0, 4).map((request) => {
+              let status: RequestStatus = "open";
+              if (request.status && isValidStatus(request.status)) {
+                status = request.status;
+              }
+
+              return (
+                <HelpRequestCard
+                  key={request._id}
+                  _id={request._id}
+                  title={request.title}
+                  location={request.areaLabel}
+                  amount={request.budget || 0}
+                  isPaid={request.isPaid || false}
+                  status={status}
+                  user={{
+                    _id: request.postedBy?._id || "",
+                    name: request.postedBy?.name || "Unknown",
+                    avatarUrl: request.postedBy?.avatarUrl,
+                    timeAgo: formatTimeAgo(request.createdAt),
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
