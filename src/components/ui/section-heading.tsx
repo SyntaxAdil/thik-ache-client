@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import * as motion from "framer-motion/client";
 import { cn } from "@/lib/utils";
@@ -31,12 +33,20 @@ export function SectionHeading({
         className
       )}
     >
-      <div {...props} className="w-full flex flex-col gap-3 inherited-styles">
+      <div {...props} className={cn("w-full flex flex-col gap-3 inherited-styles", {
+          "items-start": align === "left",
+          "items-center": align === "center",
+          "items-end": align === "right",
+      })}>
         <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-base text-zinc-400 max-w-2xl font-normal leading-relaxed">
+          <p className={cn("text-base text-zinc-400 max-w-2xl font-normal leading-relaxed", {
+            "text-left": align === "left",
+            "text-center": align === "center",
+            "text-right": align === "right",
+          })}>
             {subtitle}
           </p>
         )}

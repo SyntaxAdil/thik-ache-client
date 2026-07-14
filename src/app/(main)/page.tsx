@@ -9,6 +9,7 @@ import { CommunityVoicesSection } from "../../components/pages/home/community-vo
 import { FAQSection } from "../../components/pages/home/faq-section";
 import { helpRequestService } from "../../services/help-request.service";
 import { reviewService } from "../../services/review.service";
+import { AreaVelocitySection } from "../../components/pages/home/area-velocity-section";
 
 interface NearbyRequest {
   _id: string;
@@ -76,6 +77,7 @@ const Home = async () => {
   return (
     <div>
       <HeroBanner />
+      <AreaVelocitySection />
       <HowItWorksSection />
       <NearbyRequestsSection userArea={userArea} initialRequests={nearbyRequests} />
       <CommunityVoicesSection initialReviews={reviews} />
