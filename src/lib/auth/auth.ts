@@ -60,6 +60,11 @@ export const auth = betterAuth({
         defaultValue: 0,
         input: false,
       },
+      phoneNumber: {
+        type: "string",
+        defaultValue: "",
+        input: true,
+      },
     },
   },
 });
