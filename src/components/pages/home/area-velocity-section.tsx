@@ -11,7 +11,7 @@ import { SectionHeading } from "../../ui/section-heading";
 
 export function AreaVelocitySection() {
   return (
-    <section className="pt-24 pb-12 w-full overflow-hidden bg-black">
+    <section className="py-24 w-full overflow-hidden bg-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <SectionHeading
           title="Where You Need Us"

@@ -101,7 +101,7 @@ export function WorkflowDemo() {
 
   return (
     <div
-      className="relative w-full max-w-4xl mx-auto py-12 px-6 rounded-3xl bg-zinc-950/20 border border-zinc-800/50 overflow-hidden"
+      className="relative w-full max-w-4xl mx-auto py-24 px-6 rounded-3xl bg-zinc-950/20 border border-zinc-800/50 overflow-hidden"
       ref={containerRef}
     >
       <div className="mb-12 text-center">

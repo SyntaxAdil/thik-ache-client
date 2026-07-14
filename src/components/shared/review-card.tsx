@@ -6,31 +6,29 @@ import { useTheme } from "next-themes";
 import { motion } from "motion/react";
 import { MagicCard } from "../ui/magic-card";
 import Image from "next/image";
+import { cn } from "@/lib/utils"; 
 
 export type ReviewDirection = "requester_to_helper" | "helper_to_requester";
 
 interface ReviewCardProps {
   rating: number;
   comment: string;
-  direction: ReviewDirection;
+  direction?: ReviewDirection;
   reviewer: {
     name: string;
     role: string;
     avatarUrl?: string;
   };
+  variant?: "default" | "compact" | "featured"; 
+  className?: string;
 }
 
-// Stagger animation container variants
 const containerVariants = {
   hidden: { opacity: 0, y: 15 },
   show: {
     opacity: 1,
     y: 0,
-    transition: {
-      staggerChildren: 0.08,
-      duration: 0.4,
-      ease: "easeOut",
-    },
+    transition: { staggerChildren: 0.08, duration: 0.4, ease: "easeOut" },
   },
 } as const;
 
@@ -39,7 +37,13 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 } as const;
 
-export function ReviewCard({ rating, comment, reviewer }: ReviewCardProps) {
+export function ReviewCard({ 
+  rating, 
+  comment, 
+  reviewer, 
+  variant = "default", 
+  className 
+}: ReviewCardProps) {
   const { theme } = useTheme();
 
   const initial = reviewer.name
@@ -49,27 +53,33 @@ export function ReviewCard({ rating, comment, reviewer }: ReviewCardProps) {
     .toUpperCase()
     .slice(0, 2);
 
+  const variantStyles = {
+    default: "h-[240px]",
+    compact: "h-[180px] p-4",
+    featured: "h-[280px] border-indigo-500/20 bg-zinc-900/50", 
+  };
+
   return (
     <MagicCard
       gradientColor={theme === "dark" ? "#121214" : "#E4E4E740"}
-      className="w-full border border-zinc-900 bg-black text-zinc-100 shadow-2xl transition-all duration-300 hover:border-zinc-800 h-[240px] rounded-xl overflow-hidden group"
+      className={cn(
+        "w-full border border-zinc-900 bg-black text-zinc-100 shadow-2xl transition-all duration-300 hover:border-zinc-800 rounded-xl overflow-hidden group",
+        variantStyles[variant],
+        className
+      )}
     >
       <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-40px" }}
-        className="flex flex-col justify-between h-full w-full p-6 select-none bg-transparent box-border"
+        className="flex flex-col justify-between h-full w-full p-6 select-none"
       >
-        {/* Top Segment: Star Ratings */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-0.5 shrink-0"
-        >
+        <motion.div variants={itemVariants} className="flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110`}
+              className="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
               style={{
                 transitionDelay: `${i * 30}ms`,
                 fill: i < rating ? "#f59e0b" : "transparent",
@@ -79,44 +89,35 @@ export function ReviewCard({ rating, comment, reviewer }: ReviewCardProps) {
           ))}
         </motion.div>
 
-        {/* Middle Segment: Dynamic Comment */}
         <motion.p
           variants={itemVariants}
-          className="text-sm font-medium italic text-zinc-300 leading-relaxed line-clamp-3 my-auto py-2 group-hover:text-zinc-100 transition-colors duration-300"
+          className={cn(
+            "text-sm font-medium italic text-zinc-300 leading-relaxed my-auto py-2 group-hover:text-zinc-100 transition-colors duration-300",
+            variant === "compact" ? "line-clamp-2" : "line-clamp-3"
+          )}
         >
           &quot;{comment}&quot;
         </motion.p>
 
-        {/* Bottom Segment: User Profile Identity Panel */}
         <motion.div
           variants={itemVariants}
-          className="flex items-center gap-3 pt-4 border-t border-zinc-900 w-full shrink-0"
+          className="flex items-center gap-3 pt-4 border-t border-zinc-900 w-full"
         >
-          <div className="relative h-9 w-9 shrink-0 rounded-full border border-zinc-800 bg-zinc-900 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
-            {reviewer.avatarUrl ? (
+          <div className="relative h-9 w-9 shrink-0 rounded-full border border-zinc-800 bg-zinc-900 flex items-center justify-center overflow-hidden">
+            {reviewer.avatarUrl && (
               <Image
-                width={40}
-                height={40}
-                className="h-full w-full rounded-full object-cover bg-zinc-900"
+                width={40} height={40}
+                className="h-full w-full rounded-full object-cover"
                 src={reviewer.avatarUrl}
                 alt={reviewer.name}
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = "none";
-                }}
               />
-            ) : null}
-            <span className="text-xs font-bold text-zinc-500 absolute">
-              {initial}
-            </span>
+            )}
+            <span className="text-xs font-bold text-zinc-500 absolute">{initial}</span>
           </div>
 
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-zinc-200 truncate group-hover:text-white transition-colors duration-300">
-              {reviewer.name}
-            </span>
-            <span className="text-xs text-zinc-500 truncate">
-              {reviewer.role}
-            </span>
+            <span className="text-sm font-semibold text-zinc-200 truncate">{reviewer.name}</span>
+            <span className="text-xs text-zinc-500 truncate">{reviewer.role}</span>
           </div>
         </motion.div>
       </motion.div>
