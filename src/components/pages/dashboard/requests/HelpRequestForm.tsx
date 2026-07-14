@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CATEGORIES } from "../../explore/explore-filters";
 
 export const DHAKA_AREAS = [
   "Dhanmondi",
@@ -53,7 +54,13 @@ export const DHAKA_AREAS = [
 
 export type DhakaArea = (typeof DHAKA_AREAS)[number];
 
-type RequestCategory = "tech" | "tutoring" | "errand" | "moving" | "repair" | "other";
+type RequestCategory =
+  | "tech"
+  | "tutoring"
+  | "errand"
+  | "moving"
+  | "repair"
+  | "other";
 
 interface FormValues {
   title: string;
@@ -114,10 +121,13 @@ export function HelpRequestForm() {
     formData.append("image", file);
 
     try {
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       const result = await response.json();
       if (result.success) {
@@ -150,12 +160,13 @@ export function HelpRequestForm() {
       (error) => {
         let message = "Unable to retrieve your location.";
         if (error.code === error.PERMISSION_DENIED) {
-          message = "Location permission denied. Please enable location access in your browser.";
+          message =
+            "Location permission denied. Please enable location access in your browser.";
         }
         toast.error(message);
         setIsLocating(false);
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
     );
   };
 
@@ -196,8 +207,14 @@ export function HelpRequestForm() {
     >
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="title" className="text-zinc-300">Title</Label>
-          {errors.title && <span className="text-xs text-rose-500">{errors.title.message}</span>}
+          <Label htmlFor="title" className="text-zinc-300">
+            Title
+          </Label>
+          {errors.title && (
+            <span className="text-xs text-rose-500">
+              {errors.title.message}
+            </span>
+          )}
         </div>
         <Input
           id="title"
@@ -213,8 +230,14 @@ export function HelpRequestForm() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="shortDescription" className="text-zinc-300">Short Description</Label>
-          {errors.shortDescription && <span className="text-xs text-rose-500">{errors.shortDescription.message}</span>}
+          <Label htmlFor="shortDescription" className="text-zinc-300">
+            Short Description
+          </Label>
+          {errors.shortDescription && (
+            <span className="text-xs text-rose-500">
+              {errors.shortDescription.message}
+            </span>
+          )}
         </div>
         <Input
           id="shortDescription"
@@ -230,8 +253,14 @@ export function HelpRequestForm() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="fullDescription" className="text-zinc-300">Full Details</Label>
-          {errors.fullDescription && <span className="text-xs text-rose-500">{errors.fullDescription.message}</span>}
+          <Label htmlFor="fullDescription" className="text-zinc-300">
+            Full Details
+          </Label>
+          {errors.fullDescription && (
+            <span className="text-xs text-rose-500">
+              {errors.fullDescription.message}
+            </span>
+          )}
         </div>
         <Textarea
           id="fullDescription"
@@ -247,22 +276,26 @@ export function HelpRequestForm() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="category" className="text-zinc-300">Category</Label>
+          <Label htmlFor="category" className="text-zinc-300">
+            Category
+          </Label>
           <Controller
             name="category"
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="category" className="w-full bg-zinc-900 border-zinc-800 text-zinc-100 focus:ring-indigo-500 rounded-xl">
+                <SelectTrigger
+                  id="category"
+                  className="w-full bg-zinc-900 border-zinc-800 text-zinc-100 focus:ring-indigo-500 rounded-xl"
+                >
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-60">
-                  <SelectItem value="tech">Tech Support</SelectItem>
-                  <SelectItem value="tutoring">Tutoring</SelectItem>
-                  <SelectItem value="errand">Errand</SelectItem>
-                  <SelectItem value="moving">Moving</SelectItem>
-                  <SelectItem value="repair">Repair</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {CATEGORIES.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
@@ -270,13 +303,18 @@ export function HelpRequestForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="areaLabel" className="text-zinc-300">Select Area (Dhaka)</Label>
+          <Label htmlFor="areaLabel" className="text-zinc-300">
+            Select Area (Dhaka)
+          </Label>
           <Controller
             name="areaLabel"
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="areaLabel" className="w-full bg-zinc-900 border-zinc-800 text-zinc-100 focus:ring-indigo-500 rounded-xl">
+                <SelectTrigger
+                  id="areaLabel"
+                  className="w-full bg-zinc-900 border-zinc-800 text-zinc-100 focus:ring-indigo-500 rounded-xl"
+                >
                   <SelectValue placeholder="Select your area" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-60">
@@ -296,9 +334,13 @@ export function HelpRequestForm() {
         <div className="flex items-start gap-2.5">
           <Info className="h-4 w-4 text-indigo-400 mt-0.5 shrink-0" />
           <div className="space-y-1">
-            <h4 className="text-xs font-semibold text-zinc-200">Set Exact Location Coordinates</h4>
+            <h4 className="text-xs font-semibold text-zinc-200">
+              Set Exact Location Coordinates
+            </h4>
             <p className="text-[11px] text-zinc-500 leading-relaxed">
-              We need your exact coordinates to match you with helpers near you. Clicking the button below will automatically and securely set your current position.
+              We need your exact coordinates to match you with helpers near you.
+              Clicking the button below will automatically and securely set your
+              current position.
             </p>
           </div>
         </div>
@@ -316,7 +358,9 @@ export function HelpRequestForm() {
             ) : (
               <MapPin className="h-3.5 w-3.5 text-indigo-400" />
             )}
-            {isLocating ? "Locating your position..." : "Use My Current Location"}
+            {isLocating
+              ? "Locating your position..."
+              : "Use My Current Location"}
           </Button>
         </div>
 
@@ -349,7 +393,9 @@ export function HelpRequestForm() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <div className="space-y-2">
-          <Label htmlFor="preferredTime" className="text-zinc-300">Preferred Time (Optional)</Label>
+          <Label htmlFor="preferredTime" className="text-zinc-300">
+            Preferred Time (Optional)
+          </Label>
           <Input
             id="preferredTime"
             type="datetime-local"
@@ -415,8 +461,15 @@ export function HelpRequestForm() {
       <div className="flex flex-col gap-4 p-4 border border-zinc-900 bg-zinc-900/20 rounded-xl">
         <div className="flex flex-row items-center justify-between rounded-lg p-1">
           <div className="space-y-0.5">
-            <Label htmlFor="isPaid" className="text-sm font-semibold text-zinc-300 block">Paid Task</Label>
-            <span className="text-xs text-zinc-500 block">Toggle if you want to offer money for this help request.</span>
+            <Label
+              htmlFor="isPaid"
+              className="text-sm font-semibold text-zinc-300 block"
+            >
+              Paid Task
+            </Label>
+            <span className="text-xs text-zinc-500 block">
+              Toggle if you want to offer money for this help request.
+            </span>
           </div>
           <Controller
             name="isPaid"
@@ -435,15 +488,26 @@ export function HelpRequestForm() {
         {watchIsPaid && (
           <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center justify-between">
-              <Label htmlFor="budget" className="text-zinc-300">Budget Amount (BDT)</Label>
-              {errors.budget && <span className="text-xs text-rose-500">{errors.budget.message}</span>}
+              <Label htmlFor="budget" className="text-zinc-300">
+                Budget Amount (BDT)
+              </Label>
+              {errors.budget && (
+                <span className="text-xs text-rose-500">
+                  {errors.budget.message}
+                </span>
+              )}
             </div>
             <Input
               id="budget"
               type="number"
               {...register("budget", {
-                required: watchIsPaid ? "Budget is required for paid tasks" : false,
-                validate: (val) => !watchIsPaid || parseFloat(val) > 0 || "Budget must be greater than 0",
+                required: watchIsPaid
+                  ? "Budget is required for paid tasks"
+                  : false,
+                validate: (val) =>
+                  !watchIsPaid ||
+                  parseFloat(val) > 0 ||
+                  "Budget must be greater than 0",
               })}
               placeholder="৳"
               className="bg-zinc-900 border-zinc-800 text-zinc-100 focus-visible:ring-indigo-500 rounded-xl"
