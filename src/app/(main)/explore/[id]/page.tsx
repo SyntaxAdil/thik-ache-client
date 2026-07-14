@@ -1,6 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { headers } from "next/headers";
 import {
   Calendar,
   MapPin,
@@ -12,13 +13,23 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewCard } from "../../../../components/shared/review-card";
+import { HelpApproachButton } from "../../../../components/shared/help-approach-button";
 import { HelpRequestCard } from "../../../../components/shared/help-request-card";
+import { auth } from "@/lib/auth/auth";
+import { helpRequestService } from "../../../../services/help-request.service";
 
 interface PosterProfile {
+  _id: string;
   name: string;
-  avgRatingAsRequester: number;
-  completedCount: number;
+  avgRatingAsRequester?: number;
+  completedCount?: number;
   avatarUrl?: string;
+}
+
+interface HelpRequestLocation {
+  type?: string;
+  coordinates?: [number, number];
+  areaLabel: string;
 }
 
 interface HelpRequestData {
@@ -27,16 +38,15 @@ interface HelpRequestData {
   shortDescription: string;
   fullDescription: string;
   category: string;
-  areaLabel: string;
-  location: {
-    coordinates: [number, number];
-  };
+  location: HelpRequestLocation;
   budget?: number;
+  areaLabel?: string;
   isPaid: boolean;
-  preferredTime: string;
-  status: "OPEN" | "CLOSED" | "IN_PROGRESS";
+  preferredTime?: string;
+  createdAt?: string;
+  status: "open" | "matched" | "in_progress" | "completed" | "cancelled";
   imageUrl?: string;
-  postedBy: PosterProfile;
+  postedBy: PosterProfile | string;
 }
 
 interface UserReview {
@@ -58,141 +68,141 @@ interface RelatedRequestCard {
   budget: number;
   isPaid: boolean;
   category: string;
-  status: "OPEN" | "CLOSED" | "IN_PROGRESS";
+  status: "open" | "matched" | "in_progress" | "completed" | "cancelled";
   user: {
+    _id: string;
     name: string;
     avatarUrl?: string;
     timeAgo: string;
   };
 }
 
-interface ApiResponse {
-  requestData: HelpRequestData;
-  reviews: UserReview[];
-  relatedRequests: RelatedRequestCard[];
-}
-
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-async function getRequestDetails(id: string): Promise<ApiResponse | null> {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    const res = await fetch(`${baseUrl}/api/requests/${id}`, {
-      next: { revalidate: 60 },
-    });
-
-    if (!res.ok) {
-      if (res.status === 404) return null;
-      throw new Error();
-    }
-    return await res.json();
-  } catch {
-    return {
-      requestData: {
-        _id: id,
-        title: "Fixing Leaky Tap in Dhanmondi 27",
-        shortDescription:
-          "Need a reliable handyman to fix a persistent leak in the main kitchen mixer tap. Standard tools required.",
-        fullDescription:
-          "The main faucet in our kitchen has started leaking from the handle area. It&apos;s a modern ceramic disc mixer tap. I&apos;ve already tried tightening the base, but it seems like a washer replacement or internal cartridge cleaning might be necessary.\n\nRequirements:\n• Bring your own wrench and specialized plumbing tools.\n• Basic plumbing knowledge for modern mixer taps.\n• Clean and tidy work etiquette.\n\nI will provide the replacement cartridge if identified as the issue, but generic washers would be appreciated if you have them in your kit.",
-        category: "repair",
-        areaLabel: "Dhanmondi, Dhaka",
-        location: { coordinates: [90.3746, 23.7463] },
-        isPaid: true,
-        budget: 800,
-        preferredTime: "2026-07-22T16:30:00.000Z",
-        status: "IN_PROGRESS",
-        imageUrl:
-          "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
-        postedBy: {
-          name: "Farhan T.",
-          avgRatingAsRequester: 4.8,
-          completedCount: 12,
-        },
-      },
-      reviews: [],
-      relatedRequests: [
-        {
-          _id: "rel1",
-          title: "Water Filter Installation",
-          areaLabel: "Dhanmondi, Dhaka",
-          budget: 500,
-          isPaid: true,
-          category: "repair",
-          status: "OPEN",
-          user: {
-            name: "Tahmid Khan",
-            timeAgo: "2 hours ago",
-          },
-        },
-        {
-          _id: "rel2",
-          title: "Kitchen Sink Pipe Clog Removal",
-          areaLabel: "Dhanmondi, Dhaka",
-          budget: 650,
-          isPaid: true,
-          category: "repair",
-          status: "OPEN",
-          user: {
-            name: "Asif Rahman",
-            timeAgo: "5 hours ago",
-          },
-        },
-        {
-          _id: "rel3",
-          title: "Bathroom Fitting Maintenance",
-          areaLabel: "Dhanmondi, Dhaka",
-          budget: 1200,
-          isPaid: true,
-          category: "repair",
-          status: "IN_PROGRESS",
-          user: {
-            name: "Rashedul Islam",
-            timeAgo: "1 day ago",
-          },
-        },
-      ],
-    };
-  }
+interface RelatedBackendItem {
+  _id: string;
+  title?: string;
+  location?: {
+    
+    coordinates?: [number, number];
+  };
+  areaLabel?: string; 
+  budget?: number;
+  isPaid?: boolean;
+  category?: string;
+  status?: "open" | "matched" | "in_progress" | "completed" | "cancelled";
+  postedBy?: {
+    _id?: string;
+    name?: string;
+    avatarUrl?: string;
+  };
+  user?: {
+    _id?: string;
+    name?: string;
+    avatarUrl?: string;
+  };
+  timeAgo?: string;
 }
 
 export default async function RequestDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  const data = await getRequestDetails(id);
+  console.log("Fetching details for ID:", id);
 
-  if (!data || !data.requestData) {
+  const sessionHeaders = await headers();
+  const session = await auth.api.getSession({ headers: sessionHeaders });
+  const currentUserId = session?.user?.id ?? "";
+
+  let requestData: HelpRequestData | null = null;
+  let reviews: UserReview[] = [];
+  let relatedRequests: RelatedRequestCard[] = [];
+
+  try {
+    const [detailsResponse, relatedResponse] = await Promise.all([
+      (helpRequestService.getHelpRequestById(id) as unknown) as Promise<Record<string, unknown>>,
+      (helpRequestService.getRelatedHelpRequests(id) as unknown) as Promise<RelatedBackendItem[]>,
+    ]);
+
+    if (detailsResponse) {
+      if ("data" in detailsResponse && detailsResponse.data && typeof detailsResponse.data === "object") {
+        const nestedData = detailsResponse.data as Record<string, unknown>;
+        requestData = nestedData as unknown as HelpRequestData;
+        reviews = (nestedData.reviews as UserReview[]) || [];
+      } else if ("requestData" in detailsResponse && detailsResponse.requestData && typeof detailsResponse.requestData === "object") {
+        requestData = detailsResponse.requestData as unknown as HelpRequestData;
+        reviews = (detailsResponse.reviews as UserReview[]) || [];
+      } else {
+        requestData = detailsResponse as unknown as HelpRequestData;
+        reviews = (detailsResponse.reviews as UserReview[]) || [];
+      }
+    }
+
+    if (Array.isArray(relatedResponse)) {
+      relatedRequests = relatedResponse.map((req) => ({
+        _id: req._id,
+        title: req.title || "",
+
+        areaLabel:  req.areaLabel || "Unknown Location",
+        budget: req.budget || 0,
+        isPaid: req.isPaid || false,
+        category: req.category || "",
+        status: req.status || "open",
+        user: {
+          _id: req.postedBy?._id || req.user?._id || "",
+          name: req.postedBy?.name || req.user?.name || "Unknown",
+          avatarUrl: req.postedBy?.avatarUrl || req.user?.avatarUrl,
+          timeAgo: req.timeAgo || "Recently",
+        },
+      }));
+    }
+  } catch (error) {
+    console.error("Error loading request details:", error);
     notFound();
   }
 
-  const { requestData, reviews, relatedRequests } = data;
+  if (!requestData) {
+    notFound();
+  }
 
   const statusColors: Record<string, string> = {
-    OPEN: "bg-zinc-900 border-zinc-850 text-zinc-300",
-    IN_PROGRESS: "bg-primary/10 border-primary/20 text-primary",
-    CLOSED: "bg-emerald-950/30 border-emerald-900/50 text-emerald-400",
+    open: "bg-zinc-900 border-zinc-850 text-zinc-300",
+    matched: "bg-primary/10 border-primary/20 text-primary",
+    in_progress: "bg-primary/10 border-primary/20 text-primary",
+    completed: "bg-emerald-950/30 border-emerald-900/50 text-emerald-400",
+    cancelled: "bg-rose-950/30 border-rose-900/50 text-rose-400",
   };
 
   const statusLabels: Record<string, string> = {
-    OPEN: "Open",
-    IN_PROGRESS: "Matched",
-    CLOSED: "Completed",
+    open: "Open",
+    matched: "Matched",
+    in_progress: "In Progress",
+    completed: "Completed",
+    cancelled: "Cancelled",
   };
 
-  const [lng, lat] = requestData.location.coordinates;
+  //
+  const resolvedAreaLabel = requestData?.areaLabel || "Unknown Location";
+  
+  const coordinates = requestData.location?.coordinates || [90.3891, 23.8225];
+  const [lng, lat] = coordinates && coordinates.length === 2 ? coordinates : [90.3891, 23.8225];
+
   const mapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.0025}%2C${lat - 0.0025}%2C${lng + 0.0025}%2C${lat + 0.0025}&layer=mapnik`;
   const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
+  const hasPosterProfile = typeof requestData.postedBy === "object" && requestData.postedBy !== null;
+  const posterProfile = hasPosterProfile ? (requestData.postedBy as PosterProfile) : null;
+  const posterId = posterProfile ? posterProfile._id : (requestData.postedBy as string);
+
   return (
     <main className="min-h-screen bg-background text-foreground py-12 antialiased">
-      <div className="container mx-auto space-y-8">
+      <div className="container mx-auto space-y-8 px-4">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${statusColors[requestData.status]}`}
+              className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${statusColors[requestData.status] || "bg-zinc-900 border-zinc-850 text-zinc-300"}`}
             >
-              {statusLabels[requestData.status]}
+              {statusLabels[requestData.status] || "Open"}
             </span>
             <span className="flex items-center gap-1 text-xs font-medium rounded-full bg-secondary border border-border px-2.5 py-0.5 text-muted-foreground uppercase tracking-wider">
               <Tag className="h-3 w-3 text-primary" />
@@ -205,12 +215,18 @@ export default async function RequestDetailsPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
             <span className="flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5 text-muted-foreground/60" />{" "}
-              {requestData.areaLabel}
+              {resolvedAreaLabel}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Calendar className="h-3.5 w-3.5 text-muted-foreground/60" />{" "}
-              Posted Recently
+              {requestData.createdAt
+                ? new Date(requestData.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "Recently"}
             </span>
           </div>
         </div>
@@ -321,8 +337,7 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                       No feedbacks available
                     </p>
                     <p className="text-xs text-zinc-500 font-medium mt-0.5">
-                      Be the first to perform tasks and populate execution
-                      logs.
+                      Be the first to perform tasks and populate execution logs.
                     </p>
                   </div>
                 </div>
@@ -331,10 +346,12 @@ export default async function RequestDetailsPage({ params }: PageProps) {
           </div>
 
           <div className="space-y-4">
-            <button className="w-full py-3.5 px-4 rounded-xl bg-primary hover:opacity-90 text-primary-foreground font-bold text-xs uppercase tracking-widest shadow-lg transition-all flex items-center justify-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Message Helper
-            </button>
+            <HelpApproachButton
+              requestId={requestData._id}
+              posterId={posterId || ""}
+              currentUserId={currentUserId}
+              status={requestData.status}
+            />
 
             <div className="rounded-xl bg-card border border-border overflow-hidden shadow-xl">
               <div className="relative w-full aspect-[16/11] bg-[#0c0c10] overflow-hidden">
@@ -358,15 +375,15 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                 <div className="absolute inset-0 ring-1 ring-inset ring-border pointer-events-none" />
               </div>
               <div className="p-3.5 bg-card border-t border-border flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <span className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
                   <MapPin className="h-4 w-4 text-primary" />
-                  Near {requestData.areaLabel}
+                  Near {resolvedAreaLabel}
                 </span>
                 <a
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/70 border border-border text-2xs font-bold text-foreground uppercase tracking-wider transition-colors text-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/70 border border-border text-xs font-bold text-foreground uppercase tracking-wider transition-colors"
                 >
                   <ExternalLink size={16} />
                   Open in Maps
@@ -387,7 +404,7 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                   <p className="text-base font-bold text-foreground">
                     ৳{requestData.isPaid ? requestData.budget : 0}
                   </p>
-                  <p className="text-4xs text-muted-foreground uppercase font-bold tracking-widest mt-0.5">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-0.5">
                     {requestData.isPaid ? "Verified Budget" : "Voluntary"}
                   </p>
                 </div>
@@ -399,16 +416,20 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                 </span>
                 <div className="text-right">
                   <p className="text-xs font-bold text-zinc-200">
-                    {new Date(requestData.preferredTime).toLocaleDateString(
-                      "en-US",
-                      { month: "short", day: "numeric" }
-                    )}
+                    {requestData.preferredTime
+                      ? new Date(requestData.preferredTime).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric" },
+                        )
+                      : "Flexible"}
                   </p>
-                  <p className="text-4xs text-muted-foreground font-medium mt-0.5">
-                    {new Date(requestData.preferredTime).toLocaleTimeString(
-                      "en-US",
-                      { hour: "2-digit", minute: "2-digit" }
-                    )}
+                  <p className="text-[10px] text-muted-foreground font-medium mt-0.5">
+                    {requestData.preferredTime
+                      ? new Date(requestData.preferredTime).toLocaleTimeString(
+                          "en-US",
+                          { hour: "2-digit", minute: "2-digit" },
+                        )
+                      : ""}
                   </p>
                 </div>
               </div>
@@ -416,16 +437,16 @@ export default async function RequestDetailsPage({ params }: PageProps) {
               <hr className="border-border" />
 
               <div className="space-y-2.5">
-                <p className="text-4xs font-bold uppercase tracking-widest text-muted-foreground">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   Posted By
                 </p>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-black/20 border border-border">
                   <div className="flex items-center gap-2.5">
                     <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary overflow-hidden relative">
-                      {requestData.postedBy?.avatarUrl ? (
+                      {posterProfile?.avatarUrl ? (
                         <Image
-                          src={requestData.postedBy.avatarUrl}
-                          alt={requestData.postedBy.name}
+                          src={posterProfile.avatarUrl}
+                          alt={posterProfile.name}
                           fill
                           className="object-cover"
                         />
@@ -435,20 +456,17 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                     </div>
                     <div>
                       <p className="text-xs font-bold text-foreground leading-none">
-                        {requestData.postedBy?.name}
+                        {posterProfile?.name || "Unknown Requester"}
                       </p>
-                      <p className="text-4xs text-muted-foreground mt-1 font-medium">
-                        {requestData.postedBy?.completedCount || 0} tasks
-                        declared
+                      <p className="text-[10px] text-muted-foreground mt-1 font-medium">
+                        {posterProfile?.completedCount || 0} tasks declared
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-0.5 text-xs font-bold text-amber-400">
                     <Star className="h-3.5 w-3.5 fill-current" />
                     <span>
-                      {requestData.postedBy?.avgRatingAsRequester?.toFixed(
-                        1
-                      ) || "0.0"}
+                      {posterProfile?.avgRatingAsRequester?.toFixed(1) || "0.0"}
                     </span>
                   </div>
                 </div>
@@ -470,8 +488,13 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                   title={req.title}
                   location={req.areaLabel}
                   amount={req.budget}
+                  isPaid={req.isPaid}
                   status={req.status}
-                  user={req.user}
+                  user={{
+                    ...req.user,
+                    _id: req.user._id,
+                  }}
+                  related={true}
                 />
               ))}
             </div>
