@@ -4,79 +4,16 @@ import { ExploreFilters } from "@/components/pages/explore/explore-filters";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { helpRequestService } from "../../../services";
 
-const MOCK_DATA = [
-  {
-    _id: "1",
-    title: "Need help fixing leaking water heater at Road 12A",
-    location: "Road 12A, Dhanmondi",
-    amount: 450,
-    status: "OPEN" as const,
-    category: "plumbing",
-    user: { name: "Rahman H.", timeAgo: "15m ago" },
-  },
-  {
-    _id: "2",
-    title: "Urgent: Grocery pickup from Meena Bazar",
-    location: "Siddeshwari, Dhanmondi",
-    amount: 200,
-    status: "OPEN" as const,
-    category: "delivery",
-    user: { name: "Zakiya Begum", timeAgo: "2h ago" },
-  },
-  {
-    _id: "3",
-    title: "Need someone to walk my dog in Dhanmondi Lake",
-    location: "Dhanmondi 32",
-    amount: 350,
-    status: "IN_PROGRESS" as const,
-    category: "delivery",
-    user: { name: "Capt. Ahmed", timeAgo: "4h ago" },
-  },
-  {
-    _id: "4",
-    title: "Emergency router configuration & local WiFi setup",
-    location: "Satmasjid Road, Dhanmondi",
-    amount: 600,
-    status: "OPEN" as const,
-    category: "tech",
-    user: { name: "Adnan Sami", timeAgo: "5h ago" },
-  },
-  {
-    _id: "5",
-    title: "Looking for medicine delivery from Lazz Pharma",
-    location: "Kalabagan High Road",
-    amount: 150,
-    status: "CLOSED" as const,
-    category: "delivery",
-    user: { name: "Sabina Yasmin", timeAgo: "1d ago" },
-  },
-  {
-    _id: "6",
-    title: "Home delivery package handling & fragile dropoff",
-    location: "Dhanmondi 8/A",
-    amount: 250,
-    status: "OPEN" as const,
-    category: "delivery",
-    user: { name: "Rakib Hossain", timeAgo: "1d ago" },
-  },
-  {
-    _id: "7",
-    title: "Need help moving dining room table to 3rd floor",
-    location: "Zigatola Corner",
-    amount: 500,
-    status: "OPEN" as const,
-    category: "delivery",
-    user: { name: "Tanvir Ahmed", timeAgo: "2d ago" },
-  },
-];
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   searchParams: Promise<{
@@ -88,28 +25,117 @@ interface PageProps {
   }>;
 }
 
+interface BackendUser {
+  _id?: string;
+  name?: string;
+  image?: string;
+  avatarUrl?: string;
+}
+
+interface BackendHelpRequest {
+  _id: string;
+  title: string;
+  location?: {
+    type?: string;
+    coordinates?: [number, number];
+  };
+  areaLabel: string;
+  budget?: number;
+  isPaid?: boolean;
+  status: "open" | "matched" | "in_progress" | "completed" | "cancelled";
+  category: string;
+  postedBy?: BackendUser | string;
+  createdAt?: string;
+}
+
+interface ApiResponse {
+  items?: BackendHelpRequest[];
+  data?: {
+    items?: BackendHelpRequest[];
+  };
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export default async function ExplorePage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const searchQuery = resolvedParams.search?.toLowerCase() || "";
   const currentCategory = resolvedParams.category || "";
   const currentStatus = resolvedParams.status || "";
-  const currentArea = resolvedParams.area || "Dhanmondi";
+  const currentArea = resolvedParams.area || ""; 
   const currentPage = Math.max(Number(resolvedParams.page) || 1, 1);
 
-  const filteredData = MOCK_DATA.filter((item) => {
+  let rawRequests: BackendHelpRequest[] = [];
+  try {
+    const response = await helpRequestService.getHelpRequests() as ApiResponse;
+    
+    if (response && typeof response === "object") {
+      if (Array.isArray(response.items)) {
+        rawRequests = response.items;
+      } else if (response.data && Array.isArray(response.data.items)) {
+        rawRequests = response.data.items;
+      } else if (Array.isArray(response)) {
+        rawRequests = response as unknown as BackendHelpRequest[];
+      }
+    }
+  } catch (error) {
+    rawRequests = [];
+  }
+
+  const normalizedRequests = rawRequests.map((req) => {
+    const resolvedLabel = req.areaLabel || "Unknown Area";
+    
+    let userId = "";
+    let name = "Unknown User";
+    let avatarUrl: string | undefined = undefined;
+
+    if (req.postedBy && typeof req.postedBy === "object") {
+      userId = req.postedBy._id || "";
+      name = req.postedBy.name || "Unknown User";
+      avatarUrl = req.postedBy.image || req.postedBy.avatarUrl;
+    } else if (typeof req.postedBy === "string") {
+      userId = req.postedBy;
+    }
+
+    const timeAgo = req.createdAt
+      ? new Date(req.createdAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        })
+      : "Recently";
+
+    return {
+      _id: req._id,
+      title: req.title || "",
+      location: resolvedLabel,
+      amount: req.budget || 0,
+      isPaid: req.isPaid || false,
+      status: req.status || "open",
+      category: req.category || "",
+      user: { _id: userId, name, avatarUrl, timeAgo },
+    };
+  });
+
+  const filteredData = normalizedRequests.filter((item) => {
     const matchesSearch =
+      !searchQuery ||
       item.title.toLowerCase().includes(searchQuery) ||
       item.location.toLowerCase().includes(searchQuery);
     const matchesCategory =
       !currentCategory || item.category === currentCategory;
-    const matchesStatus = !currentStatus || item.status === currentStatus;
+    const matchesStatus = 
+      !currentStatus || item.status.toLowerCase() === currentStatus.toLowerCase();
     const matchesArea =
       !currentArea ||
       item.location.toLowerCase().includes(currentArea.toLowerCase());
     return matchesSearch && matchesCategory && matchesStatus && matchesArea;
   });
 
-  const ITEMS_PER_PAGE = 3;
+  const ITEMS_PER_PAGE = 6;
   const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
 
@@ -124,23 +150,22 @@ export default async function ExplorePage({ searchParams }: PageProps) {
     if (searchQuery) params.set("search", searchQuery);
     if (currentCategory) params.set("category", currentCategory);
     if (currentStatus) params.set("status", currentStatus);
-    params.set("area", currentArea);
+    if (currentArea) params.set("area", currentArea);
     params.set("page", pageNumber.toString());
     return `/explore?${params.toString()}`;
   };
 
   return (
     <main className="min-h-screen w-full bg-black text-zinc-100 py-16 tracking-tight">
-      <div className="container mx-auto px-4  lg:px-0 space-y-10">
+      <div className="container mx-auto px-4 lg:px-0 space-y-10">
         <ExploreFilters />
 
         <div>
           <h1 className="text-3xl font-extrabold text-white">
-            Explore Requests near {currentArea}
+            Explore Requests {currentArea ? `near ${currentArea}` : ""}
           </h1>
           <p className="text-xs text-zinc-500 mt-1.5 font-medium">
-            {totalItems} active {totalItems === 1 ? "request" : "requests"}{" "}
-            looking for help
+            {totalItems} active {totalItems === 1 ? "request" : "requests"} looking for help
           </p>
         </div>
 
@@ -153,6 +178,7 @@ export default async function ExplorePage({ searchParams }: PageProps) {
                 title={request.title}
                 location={request.location}
                 amount={request.amount}
+                isPaid={request.isPaid}
                 status={request.status}
                 user={request.user}
               />
