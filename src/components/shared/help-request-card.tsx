@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MapPin, Calendar, Trash2, CheckCircle2, Ban, MoreVertical, ArrowRight } from "lucide-react";
+import { MapPin, Calendar, Trash2, CheckCircle2, Ban, MoreVertical, ArrowRight, Eye } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { helpRequestService } from "@/services/help-request.service";
@@ -123,7 +123,7 @@ export function HelpRequestCard({
 
   return (
     <>
-      <div className={`group flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 transition-all ${related ? "opacity-95" : ""}`}>
+      <div className={`group flex flex-col justify-between rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 transition-all ${related ? "opacity-95" : ""} hover:-translate-y-1.25 transition-all duration-200`}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium border ${getStatusColor(status)}`}>
@@ -133,7 +133,7 @@ export function HelpRequestCard({
 
             <div className="flex items-center gap-2">
               <Link href={`/explore/${_id}`} className="flex items-center gap-1.5 text-sm font-semibold text-zinc-600 hover:text-primary transition-colors">
-                View <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                <Eye className="h-4 w-4" /> View
               </Link>
               {isOwner && !related && (
                 <DropdownMenu>
