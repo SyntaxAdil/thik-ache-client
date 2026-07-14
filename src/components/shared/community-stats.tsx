@@ -1,5 +1,9 @@
-import React from "react"
-import { Users2, Award, CheckCircle2, ShieldAlert } from "lucide-react"
+// components/shared/community-stats.tsx
+import React from "react";
+import { Users2, Award, CheckCircle2, ShieldAlert } from "lucide-react";
+import { reviewService } from "@/services/review.service";
+import { helpRequestService } from "@/services/help-request.service";
+import { userService } from "@/services/user.service";
 
 interface StatCardProps {
   title: string;
@@ -25,13 +29,115 @@ const StatCard = ({ title, value, description, icon: Icon, colorClass, glowClass
     </div>
     <p className="text-2xs text-zinc-500 leading-relaxed mt-4 font-medium">{description}</p>
   </div>
-)
+);
 
-export default function CommunityStats() {
+interface UserSummary {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  area?: string;
+  avgRating?: number;
+  completedCount?: number;
+  createdAt: string;
+}
+
+interface ReviewItem {
+  _id: string;
+  rating: number;
+  comment: string;
+  reviewer: UserSummary | string;
+  reviewee: UserSummary | string;
+  request: {
+    _id: string;
+    title: string;
+    category: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface HelpRequestItem {
+  _id: string;
+  title: string;
+  status: string;
+  helper: UserSummary | string;
+  postedBy: UserSummary | string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PaginatedResponse {
+  items?: HelpRequestItem[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+function getUserId(user: UserSummary | string | undefined): string {
+  if (!user) return "";
+  if (typeof user === "string") return user;
+  return user._id || "";
+}
+
+export default async function CommunityStats() {
+  let totalMembers = 0;
+  let completedProjects = 0;
+  let averageRating = 0;
+  let activeTasks = 0;
+
+  try {
+    const [usersResponse, reviewsResponse, requestsResponse] = await Promise.all([
+      userService.getAllUsers(),
+      reviewService.getAllReviews(),
+      helpRequestService.getHelpRequests({ limit: 100 }),
+    ]);
+
+    const users = Array.isArray(usersResponse) ? (usersResponse as UserSummary[]) : [];
+    const reviews = Array.isArray(reviewsResponse) ? (reviewsResponse as ReviewItem[]) : [];
+
+    let requests: HelpRequestItem[] = [];
+    if (requestsResponse && typeof requestsResponse === "object") {
+      const paginated = requestsResponse as PaginatedResponse;
+      if ("items" in paginated && Array.isArray(paginated.items)) {
+        requests = paginated.items as HelpRequestItem[];
+      } else if (Array.isArray(requestsResponse)) {
+        requests = requestsResponse as HelpRequestItem[];
+      }
+    }
+
+    totalMembers = users.length;
+
+    const completedRequests = requests.filter((req) => req.status === "completed");
+    completedProjects = completedRequests.length;
+
+    const completedTasksByUser = requests.filter((req) => {
+      const helperId = getUserId(req.helper);
+      return req.status === "completed" && helperId;
+    });
+
+    const allRatings = reviews.map((review) => review.rating);
+    if (allRatings.length > 0) {
+      const sum = allRatings.reduce((acc, val) => acc + val, 0);
+      averageRating = Math.round((sum / allRatings.length) * 10) / 10;
+    }
+
+    const activeRequests = requests.filter(
+      (req) => req.status === "open" || req.status === "matched" || req.status === "in_progress"
+    );
+    activeTasks = activeRequests.length;
+
+  } catch (error) {
+    console.error("Error fetching community stats:", error);
+  }
+
   const statistics = [
     {
       title: "Total Members",
-      value: "150+",
+      value: totalMembers > 0 ? `${totalMembers}+` : "0",
       description: "Total number of developers registered on the platform.",
       icon: Users2,
       colorClass: "text-indigo-400",
@@ -39,7 +145,7 @@ export default function CommunityStats() {
     },
     {
       title: "Completed Projects",
-      value: "45",
+      value: completedProjects > 0 ? `${completedProjects}` : "0",
       description: "Total projects successfully completed and reviewed.",
       icon: CheckCircle2,
       colorClass: "text-emerald-400",
@@ -47,7 +153,7 @@ export default function CommunityStats() {
     },
     {
       title: "Average Rating",
-      value: "4.8",
+      value: averageRating > 0 ? `${averageRating.toFixed(1)}` : "0.0",
       description: "Overall peer rating calculated from all member reviews.",
       icon: Award,
       colorClass: "text-amber-400",
@@ -55,7 +161,7 @@ export default function CommunityStats() {
     },
     {
       title: "Active Tasks",
-      value: "12",
+      value: activeTasks > 0 ? `${activeTasks}` : "0",
       description: "Current ongoing projects and tasks in development.",
       icon: ShieldAlert,
       colorClass: "text-rose-400",
@@ -69,5 +175,5 @@ export default function CommunityStats() {
         <StatCard key={idx} {...stat} />
       ))}
     </div>
-  )
+  );
 }
