@@ -11,8 +11,8 @@ interface MapPin {
 
 const DHAKA_SPOTS: MapPin[] = [
   { lat: 23.8223, lon: 90.3654, label: "Mirpur - Repair Task", user: "Adil" },
-  { lat: 23.7461, lon: 90.3742, label: "Dhanmondi - Delivery", user: "Fahim" },
-  { lat: 23.7936, lon: 90.4066, label: "Banani - Design Task", user: "Tahmid" },
+  { lat: 23.7461, lon: 90.3742, label: "Dhanmondi - Delivery", user: "Rahman" },
+  { lat: 23.7936, lon: 90.4066, label: "Banani - Design Task", user: "Saima" },
 ];
 
 // bbox aspect ratio is deliberately locked to 2:1 to match the container below,

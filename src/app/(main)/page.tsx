@@ -10,6 +10,7 @@ import { FAQSection } from "../../components/pages/home/faq-section";
 import { helpRequestService } from "../../services/help-request.service";
 import { reviewService } from "../../services/review.service";
 import { AreaVelocitySection } from "../../components/pages/home/area-velocity-section";
+import { WorkflowDemo } from "../../components/pages/home/work-flow-demo";
 
 interface NearbyRequest {
   _id: string;
@@ -79,6 +80,7 @@ const Home = async () => {
       <HeroBanner />
       <AreaVelocitySection />
       <HowItWorksSection />
+      <WorkflowDemo />
       <NearbyRequestsSection userArea={userArea} initialRequests={nearbyRequests} />
       <CommunityVoicesSection initialReviews={reviews} />
       <FAQSection />
