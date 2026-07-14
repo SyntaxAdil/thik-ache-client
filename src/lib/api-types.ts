@@ -1,5 +1,3 @@
-// lib/api-types.ts
-
 
 export type RequestStatus =
   | "open"

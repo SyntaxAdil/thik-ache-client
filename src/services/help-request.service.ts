@@ -1,4 +1,3 @@
-
 import type {
   HelpRequest,
   PaginatedHelpRequests,
@@ -16,40 +15,57 @@ export const helpRequestService = {
       }
     });
     return apiRequest<PaginatedHelpRequests>(
-      `/requests?${queryParams.toString()}`
+      `/requests?${queryParams.toString()}`,
+      { requiresAuth: false }
     );
   },
 
   getHelpRequestById: (id: string) =>
-    apiRequest<HelpRequest>(`/requests/${id}`),
+    apiRequest<HelpRequest>(`/requests/${id}`, { requiresAuth: false }),
 
   getRelatedHelpRequests: (id: string) =>
-    apiRequest<HelpRequest[]>(`/requests/${id}/related`),
+    apiRequest<HelpRequest[]>(`/requests/${id}/related`, { requiresAuth: false }),
 
   getMyPostedRequests: () =>
-    apiRequest<HelpRequest[]>(`/requests/mine/posted`),
+    apiRequest<HelpRequest[]>(`/requests/mine/posted`, { requiresAuth: true }),
 
   getMyHelpingRequests: () =>
-    apiRequest<HelpRequest[]>(`/requests/mine/helping`),
+    apiRequest<HelpRequest[]>(`/requests/mine/helping`, { requiresAuth: true }),
 
   createHelpRequest: (payload: CreateHelpRequestPayload) =>
     apiRequest<HelpRequest>(`/requests`, {
       method: "POST",
       body: JSON.stringify(payload),
+      requiresAuth: true,
     }),
 
   acceptHelpRequest: (id: string) =>
-    apiRequest<HelpRequest>(`/requests/${id}/accept`, { method: "PATCH" }),
+    apiRequest<HelpRequest>(`/requests/${id}/accept`, { 
+      method: "PATCH",
+      requiresAuth: true,
+    }),
 
   markInProgress: (id: string) =>
-    apiRequest<HelpRequest>(`/requests/${id}/in-progress`, { method: "PATCH" }),
+    apiRequest<HelpRequest>(`/requests/${id}/in-progress`, { 
+      method: "PATCH",
+      requiresAuth: true,
+    }),
 
   markComplete: (id: string) =>
-    apiRequest<HelpRequest>(`/requests/${id}/complete`, { method: "PATCH" }),
+    apiRequest<HelpRequest>(`/requests/${id}/complete`, { 
+      method: "PATCH",
+      requiresAuth: true,
+    }),
 
   cancelHelpRequest: (id: string) =>
-    apiRequest<HelpRequest>(`/requests/${id}/cancel`, { method: "PATCH" }),
+    apiRequest<HelpRequest>(`/requests/${id}/cancel`, { 
+      method: "PATCH",
+      requiresAuth: true,
+    }),
 
   deleteHelpRequest: (id: string) =>
-    apiRequest<{ message: string }>(`/requests/${id}`, { method: "DELETE" }),
+    apiRequest<{ message: string }>(`/requests/${id}`, { 
+      method: "DELETE",
+      requiresAuth: true,
+    }),
 };

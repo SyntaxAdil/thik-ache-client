@@ -29,7 +29,7 @@ export default function DashboardHeader({
     <nav className="flex items-center justify-between gap-4 pe-4 py-2 border-b border-zinc-900 mb-4 select-none sticky top-0 left-0 right-0 z-50 bg-zinc-950">
       {/* Header Title */}
       <div className="flex items-center gap-6">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className=" hidden md:block text-2xl font-bold tracking-tight text-white">
           {title || "Dashboard"}
         </h1>
 

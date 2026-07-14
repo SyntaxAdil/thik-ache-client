@@ -6,27 +6,36 @@ import { auth } from "@/lib/auth/auth";
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
+interface ApiRequestOptions extends RequestInit {
+  requiresAuth?: boolean;
+}
+
 export async function apiRequest<T = unknown>(
   endpoint: string,
-  options: RequestInit = {}
+  options: ApiRequestOptions = {}
 ): Promise<T> {
+  const { requiresAuth = true, ...fetchOptions } = options;
   let token: string | null = null;
-  try {
-    const sessionHeaders = await headers();
-    const tokenData = await auth.api.getToken({ headers: sessionHeaders });
-    token = tokenData?.token ?? null;
-  } catch {}
 
-  const requestHeaders = new Headers(options.headers || {});
-  if (!requestHeaders.has("Content-Type") && options.body) {
+  if (requiresAuth) {
+    try {
+      const sessionHeaders = await headers();
+      const tokenData = await auth.api.getToken({ headers: sessionHeaders });
+      token = tokenData?.token ?? null;
+    } catch {}
+  }
+
+  const requestHeaders = new Headers(fetchOptions.headers || {});
+  if (!requestHeaders.has("Content-Type") && fetchOptions.body) {
     requestHeaders.set("Content-Type", "application/json");
   }
+  
   if (token) {
     requestHeaders.set("Authorization", `Bearer ${token}`);
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
+    ...fetchOptions,
     headers: requestHeaders,
     cache: "no-store",
   });
