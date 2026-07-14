@@ -24,6 +24,9 @@ export const reviewService = {
       { requiresAuth: true }
     ),
 
+  getAllReviews: () =>
+    apiRequest<Review[]>(`/reviews/all`, { requiresAuth: true }),
+
   createReview: (payload: CreateReviewPayload) =>
     apiRequest<Review>(`/reviews`, {
       method: "POST",

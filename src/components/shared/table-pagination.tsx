@@ -132,25 +132,50 @@ export function ReusableTablePagination<T>({
                 />
               </PaginationItem>
 
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i}>
+              {Array.from({ length: Math.min(totalPages, 10) }).map((_, i) => {
+                const pageNum = i + 1;
+                const isActive = currentPage === pageNum;
+                return (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageNum);
+                      }}
+                      isActive={isActive}
+                      className={`text-2xs h-9 w-9 rounded-xl border transition-all ${
+                        isActive
+                          ? "bg-indigo-600 border-indigo-500 text-white hover:bg-indigo-500"
+                          : "bg-zinc-950 border-zinc-900 text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                      }`}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              {totalPages > 10 && (
+                <PaginationItem>
+                  <span className="text-zinc-500 text-xs px-2">...</span>
+                </PaginationItem>
+              )}
+
+              {totalPages > 10 && (
+                <PaginationItem>
                   <PaginationLink
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      handlePageChange(i + 1);
+                      handlePageChange(totalPages);
                     }}
-                    isActive={currentPage === i + 1}
-                    className={`text-2xs h-9 w-9 rounded-xl border transition-all ${
-                      currentPage === i + 1
-                        ? "bg-indigo-600 border-indigo-500 text-white hover:bg-indigo-500"
-                        : "bg-zinc-950 border-zinc-900 text-zinc-400 hover:bg-zinc-900 hover:text-white"
-                    }`}
+                    className="text-2xs h-9 w-9 rounded-xl border bg-zinc-950 border-zinc-900 text-zinc-400 hover:bg-zinc-900 hover:text-white"
                   >
-                    {i + 1}
+                    {totalPages}
                   </PaginationLink>
                 </PaginationItem>
-              ))}
+              )}
 
               <PaginationItem>
                 <PaginationNext
