@@ -50,6 +50,16 @@ export const auth = betterAuth({
         defaultValue: "Dhanmondi",
         input: true,
       },
+      avgRating: {
+        type: "number",
+        defaultValue: 0,
+        input: false,
+      },
+      completedCount: {
+        type: "number",
+        defaultValue: 0,
+        input: false,
+      },
     },
   },
 });
