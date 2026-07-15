@@ -7,10 +7,19 @@ import { auth } from "../../../lib/auth/auth";
 import { taskColumns, Task } from "../../../components/pages/dashboard/tasks/task-columns";
 import { Metadata } from "next";
 
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: "My Tasks",
   description: "View all the tasks you have completed.",
 };
+
+const statusPriority: Record<string, number> = {
+  matched: 0,
+  in_progress: 1,
+  open: 2,
+  completed: 3,
+  cancelled: 4,
+};
+
 export default async function MyTasks() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -44,6 +53,16 @@ export default async function MyTasks() {
       : [];
 
     allTasks = [...helpingTasks, ...postedTasks];
+
+    allTasks.sort((a, b) => {
+      const statusA = statusPriority[a.status] ?? 99;
+      const statusB = statusPriority[b.status] ?? 99;
+      if (statusA !== statusB) {
+        return statusA - statusB;
+      }
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
   } catch (error) {
     console.error("Error fetching tasks:", error);
   }
@@ -55,8 +74,7 @@ export default async function MyTasks() {
           <div>
             <h1 className="text-3xl font-extrabold text-white">My Tasks</h1>
             <p className="text-xs text-zinc-500 mt-1.5 font-medium">
-              {allTasks.length} {allTasks.length === 1 ? "task" : "tasks"} in
-              total
+              {allTasks.length} {allTasks.length === 1 ? "task" : "tasks"} in total
             </p>
           </div>
 
