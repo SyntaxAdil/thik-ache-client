@@ -9,7 +9,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { helpRequestService } from "../../../services";
 
 export const dynamic = "force-dynamic";
@@ -159,8 +159,6 @@ export default async function ExplorePage({ searchParams }: PageProps) {
     <main className="min-h-screen w-full bg-black text-zinc-100 py-16 tracking-tight">
       <div className="container mx-auto px-4 lg:px-0 space-y-10">
 
-
-      
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="px-2.5 py-0.5 text-2xs font-bold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -181,8 +179,7 @@ export default async function ExplorePage({ searchParams }: PageProps) {
           <hr className="border-zinc-900 w-16 border-t-2 pt-2" />
         </div>
 
-
-                <ExploreFilters />
+        <ExploreFilters />
 
         {paginatedData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
@@ -249,6 +246,41 @@ export default async function ExplorePage({ searchParams }: PageProps) {
             </PaginationContent>
           </Pagination>
         )}
+
+        <section className="pt-10 border-t border-zinc-900/50">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6 rounded-2xl bg-zinc-950/40 border border-zinc-900">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                <Phone className="h-5 w-5 text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white">Need Help?</h3>
+                <p className="text-xs text-zinc-500">Contact our support team for assistance</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <a
+                href="tel:+8801234567890"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+              >
+                <Phone className="h-4 w-4 text-indigo-400" />
+                +880 1234 567890
+              </a>
+              <a
+                href="mailto:support@thikache.com"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+              >
+                <Mail className="h-4 w-4 text-indigo-400" />
+                support@thikache.com
+              </a>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/30 border border-zinc-800/50 text-xs text-zinc-500">
+                <Clock className="h-4 w-4 text-zinc-600" />
+                Available 24/7
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   );

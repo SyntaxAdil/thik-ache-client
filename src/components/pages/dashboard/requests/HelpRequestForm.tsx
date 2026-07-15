@@ -21,11 +21,7 @@ import {
 } from "@/components/ui/select";
 import { DHAKA_AREAS, DhakaArea } from "../../../../assets/dhaka-top-areas";
 import { CATEGORIES } from "../../explore/explore-filters";
-
-
-
-
-
+import { useSession } from "../../../../lib/auth/auth-client";
 
 type RequestCategory =
   | "tech"
@@ -47,6 +43,14 @@ interface FormValues {
   budget: string;
   preferredTime: string;
 }
+interface UserWithPhone {
+  id: string;
+  name: string;
+  email: string;
+  image?: string;
+  phoneNumber?: string;
+  role?: string;
+}
 
 export function HelpRequestForm() {
   const router = useRouter();
@@ -54,6 +58,11 @@ export function HelpRequestForm() {
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+const {data:session} = useSession();
+  const user = session?.user as UserWithPhone | undefined;
+
+
+
 
   const {
     register,
@@ -144,6 +153,14 @@ export function HelpRequestForm() {
   };
 
   const onSubmit = async (data: FormValues) => {
+    if (!user?.phoneNumber || user.phoneNumber.trim() === "") {
+      toast.error(
+        "Please add your phone number to your profile before posting a request",
+      );
+      setIsPending(false);
+      return;
+    }
+
     setIsPending(true);
 
     try {

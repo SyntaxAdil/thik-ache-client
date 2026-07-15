@@ -10,6 +10,7 @@ import {
   Star,
   MessageSquare,
   ExternalLink,
+  Phone,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ReviewCard } from "../../../../components/shared/review-card";
@@ -24,6 +25,7 @@ interface PosterProfile {
   avgRating?: number;
   completedCount?: number;
   avatarUrl?: string;
+  phoneNumber?: string;
 }
 
 interface HelpRequestLocation {
@@ -119,7 +121,6 @@ interface RelatedBackendItem {
 
 export default async function RequestDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  console.log("Fetching details for ID:", id);
 
   const sessionHeaders = await headers();
   const session = await auth.api.getSession({ headers: sessionHeaders });
@@ -250,8 +251,6 @@ export default async function RequestDetailsPage({ params }: PageProps) {
   if (!requestData) {
     notFound();
   }
-
-  console.log("Final reviews:", reviews);
 
   const statusColors: Record<string, string> = {
     open: "bg-zinc-900 border-zinc-850 text-zinc-300",
@@ -557,6 +556,21 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                     </span>
                   </div>
                 </div>
+
+                {posterProfile?.phoneNumber && (
+                  <div className="mt-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-emerald-400" />
+                      <span className="text-xs text-zinc-400">Contact Requester</span>
+                    </div>
+                    <a
+                      href={`tel:${posterProfile.phoneNumber}`}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-xs font-medium transition-colors"
+                    >
+                      {posterProfile.phoneNumber}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
