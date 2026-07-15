@@ -78,6 +78,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://thikache.vercel.app",
   },
+    verification: {
+    google: "mao8sX2_o407oWcPS57i_CHmQZzWGIv6yU8g80A9CFY",
+  },
 };
 
 const jsonLd = {
