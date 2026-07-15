@@ -75,7 +75,7 @@ export function UserDashboard({ userId, requests, reviews }: UserDashboardProps)
         userHelping={userHelping}
       />
 
-      <div className="flex justify-between gap-4">
+      <div className="flex flex-col md:flex-row  justify-between gap-4">
     
 
       <DashboardRequestsTable

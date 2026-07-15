@@ -49,7 +49,7 @@ export default async function TrustPage({ searchParams }: PageProps) {
 
   return (
     <main className="min-h-screen bg-black text-zinc-100 py-16 tracking-tight">
-      <div className="container mx-auto px-0  lg:px-0 ">
+      <div className="container mx-auto px-4  md:px-0 ">
         <div className="flex flex-col md:flex-row gap-12 items-start w-full">
           <div className="w-full md:w-64 shrink-0 space-y-6  border-zinc-900">
             <div>

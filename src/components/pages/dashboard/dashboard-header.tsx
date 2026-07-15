@@ -15,6 +15,7 @@ import { motion, Variants } from "framer-motion";
 import AvatarUserDropdown from "../../shared/avatar-dropdown";
 import DashboardNotification from "./dashboard-notification";
 import { useSession } from "../../../lib/auth/auth-client";
+import { SidebarTrigger } from "../../ui/sidebar";
 
 interface UserWithRole {
   id: string;
@@ -176,6 +177,10 @@ export default function DashboardHeader({
         >
           {displayTitle}
         </motion.h1>
+
+        <div className="block md:hidden mr-2" >
+          <SidebarTrigger></SidebarTrigger>
+        </div>
 
         <motion.div variants={breadcrumbVariants}>
           <Breadcrumb>

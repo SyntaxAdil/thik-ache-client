@@ -12,7 +12,7 @@ export default function Hero(): React.JSX.Element {
   const handleScrollDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     window.scrollBy({
-      top: window.innerHeight * 0.9,
+      top: window.innerHeight * 1.47,
       behavior: "smooth",
     });
   };

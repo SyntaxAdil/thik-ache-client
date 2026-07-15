@@ -30,11 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -125,7 +121,7 @@ export function ProfileClient({ user }: ProfileClientProps) {
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
     const result = await response.json();
@@ -267,7 +263,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         <label className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center cursor-pointer hover:bg-black/70 transition-all">
                           <div className="flex flex-col items-center gap-0.5 text-white">
                             <Upload className="h-4 w-4" />
-                            <span className="text-[8px] font-semibold">Change</span>
+                            <span className="text-[8px] font-semibold">
+                              Change
+                            </span>
                           </div>
                           <input
                             type="file"
@@ -280,12 +278,17 @@ export function ProfileClient({ user }: ProfileClientProps) {
                     </div>
 
                     <div className="mt-4 text-center">
-                      <h2 className="text-xl font-bold text-white">{user.name}</h2>
+                      <h2 className="text-xl font-bold text-white">
+                        {user.name}
+                      </h2>
                       <div className="flex items-center justify-center gap-2 mt-1">
                         <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-xs font-medium">
                           {user.role || "User"}
                         </Badge>
-                        <Badge variant="outline" className="text-zinc-400 border-zinc-800 text-xs">
+                        <Badge
+                          variant="outline"
+                          className="text-zinc-400 border-zinc-800 text-xs"
+                        >
                           {user.id?.slice(-6) || "N/A"}
                         </Badge>
                       </div>
@@ -307,7 +310,10 @@ export function ProfileClient({ user }: ProfileClientProps) {
                           key={idx}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: 0.2 + idx * 0.05 }}
+                          transition={{
+                            duration: 0.3,
+                            delay: 0.2 + idx * 0.05,
+                          }}
                           className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/30 border border-zinc-900/50 hover:border-zinc-800 transition-colors"
                         >
                           <div className="flex items-center gap-3">
@@ -395,8 +401,12 @@ export function ProfileClient({ user }: ProfileClientProps) {
                       <User className="h-5 w-5 text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white">Personal Information</h3>
-                      <p className="text-sm text-zinc-500">Manage your personal details</p>
+                      <h3 className="text-lg font-bold text-white">
+                        Personal Information
+                      </h3>
+                      <p className="text-sm text-zinc-500">
+                        Manage your personal details
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
@@ -426,7 +436,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                           className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 disabled:opacity-70 focus:border-red-500/50 focus:ring-red-500/20"
                         />
                         {errors.name && (
-                          <p className="text-xs text-red-500">{errors.name.message}</p>
+                          <p className="text-xs text-red-500">
+                            {errors.name.message}
+                          </p>
                         )}
                       </div>
 
@@ -444,7 +456,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                           disabled
                           className="bg-zinc-900/30 border-zinc-800 text-zinc-500 cursor-not-allowed"
                         />
-                        <p className="text-[10px] text-zinc-600">Email cannot be changed</p>
+                        <p className="text-[10px] text-zinc-600">
+                          Email cannot be changed
+                        </p>
                       </div>
 
                       <div className="space-y-2">
@@ -466,11 +480,15 @@ export function ProfileClient({ user }: ProfileClientProps) {
                           disabled={!isEditing}
                           placeholder="+880 1234567890"
                           className={`bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 disabled:opacity-70 focus:border-red-500/50 focus:ring-red-500/20 ${
-                            !hasPhoneNumber && !isEditing ? "border-amber-500/50" : ""
+                            !hasPhoneNumber && !isEditing
+                              ? "border-amber-500/50"
+                              : ""
                           }`}
                         />
                         {errors.phoneNumber && (
-                          <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>
+                          <p className="text-xs text-red-500">
+                            {errors.phoneNumber.message}
+                          </p>
                         )}
                         {!hasPhoneNumber && !isEditing && (
                           <p className="text-[10px] text-amber-400 flex items-center gap-1">
@@ -493,7 +511,10 @@ export function ProfileClient({ user }: ProfileClientProps) {
                             name="area"
                             control={control}
                             render={({ field }) => (
-                              <Select value={field.value} onValueChange={field.onChange}>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <SelectTrigger className="w-full bg-zinc-900/50 border-zinc-800 text-white rounded-xl">
                                   <SelectValue placeholder="Select your area" />
                                 </SelectTrigger>
@@ -510,7 +531,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         ) : (
                           <Input
                             id="location"
-                            value={user.area || user.district || "Not specified"}
+                            value={
+                              user.area || user.district || "Not specified"
+                            }
                             disabled
                             className="bg-zinc-900/30 border-zinc-800 text-zinc-500 cursor-not-allowed"
                           />
@@ -534,8 +557,12 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         <TrendingUp className="h-5 w-5 text-emerald-400" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-white">Activity Overview</h3>
-                        <p className="text-sm text-zinc-500">Your contribution summary</p>
+                        <h3 className="text-lg font-bold text-white">
+                          Activity Overview
+                        </h3>
+                        <p className="text-sm text-zinc-500">
+                          Your contribution summary
+                        </p>
                       </div>
                     </div>
                   </CardHeader>
@@ -546,7 +573,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         <p className="text-2xl font-bold text-amber-400">
                           {user.avgRating?.toFixed(1) || "0.0"}
                         </p>
-                        <p className="text-xs text-zinc-500 mt-1">Average Rating</p>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          Average Rating
+                        </p>
                         <div className="flex items-center justify-center gap-0.5 mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -565,7 +594,9 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         <p className="text-2xl font-bold text-emerald-400">
                           {user.completedCount || 0}
                         </p>
-                        <p className="text-xs text-zinc-500 mt-1">Tasks Completed</p>
+                        <p className="text-xs text-zinc-500 mt-1">
+                          Tasks Completed
+                        </p>
                       </div>
 
                       <div className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-900/50 text-center">
@@ -587,8 +618,6 @@ export function ProfileClient({ user }: ProfileClientProps) {
                       <div className="flex items-center gap-2 text-xs text-zinc-500">
                         <Shield className="h-3.5 w-3.5" />
                         <span>Member since {formatDate(user.createdAt)}</span>
-                        <span className="mx-2">•</span>
-                        <span>ID: {user.id}</span>
                       </div>
                     </div>
                   </CardContent>
