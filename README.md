@@ -8,7 +8,7 @@ A closed-loop, community-driven platform where people post small everyday help r
 
 **Post it. Get matched. Get it done. Build trust.**
 
-[Live Demo](https://thikache.vercel.app) · [Frontend Repo](https://github.com/SyntaxAdil) · [Backend Repo](https://github.com/SyntaxAdil/thik-ache-server)
+[Live Demo](https://thik-ache.vercel.app) · [Frontend Repo](https://github.com/SyntaxAdil) · [Backend Repo](https://github.com/SyntaxAdil/thik-ache-server)
 
 </div>
 
@@ -30,7 +30,7 @@ Every request reaches a definite end state — no unresolved loops, no external 
 
 ## Live Demo & Credentials
 
-**Live URL:** [thikache.vercel.app](https://thikache.vercel.app)
+**Live URL:** [thik-ache.vercel.app](https://thik-ache.vercel.app)
 
 | Role | Email | Password |
 |---|---|---|
