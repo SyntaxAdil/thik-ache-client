@@ -11,6 +11,7 @@ import { helpRequestService } from "../../services/help-request.service";
 import { reviewService } from "../../services/review.service";
 import { AreaVelocitySection } from "../../components/pages/home/area-velocity-section";
 import { WorkflowDemo } from "../../components/pages/home/work-flow-demo";
+import { WhyTrustUs } from "../../components/pages/home/why-trust-us";
 
 interface NearbyRequest {
   _id: string;
@@ -82,6 +83,7 @@ const Home = async () => {
       <HowItWorksSection />
       <WorkflowDemo />
       <NearbyRequestsSection userArea={userArea} initialRequests={nearbyRequests} />
+      <WhyTrustUs />
       <CommunityVoicesSection initialReviews={reviews} />
       <FAQSection />
     </div>
