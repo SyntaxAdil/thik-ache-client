@@ -33,7 +33,7 @@ const STEPS = [
 
 export default function HowItWorksSection() {
   return (
-    <section className="w-full py-24 px-4 bg-black border-t border-zinc-900">
+    <section className="w-full py-24 px-4 bg-black border-t border-zinc-900" id="how-it-works">
       <div className="container mx-auto">
         <SectionHeading
           title="How ThikAche Works"

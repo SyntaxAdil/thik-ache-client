@@ -20,37 +20,28 @@ const footerData: FooterSection[] = [
   {
     title: "PLATFORM",
     links: [
-      { label: "How It Works", href: "/how-it-works" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Verification", href: "/verification" },
-      { label: "Safety Hub", href: "/safety#about" },
+      { label: "How It Works", href: "/trust?tab=how-it-works" },
+      { label: "Privacy & Safety", href: "/trust?tab=privacy-safety" },
+      { label: "Data Architecture", href: "/trust?tab=data-collection" },
     ],
   },
   {
     title: "NEIGHBORHOODS",
     links: [
-      { label: "Dhanmondi", href: "/explore?area=dhanmondi" },
-      { label: "Lalmatia", href: "/explore?area=lalmatia" },
-      { label: "Gulshan", href: "/explore?area=gulshan" },
-      { label: "Uttara", href: "/explore?area=uttara" },
+      { label: "Dhanmondi", href: "/explore?area=Dhanmondi" },
+      { label: "Mirpur", href: "/explore?area=Mirpur" },
+      { label: "Banani", href: "/explore?area=Banani" },
+      { label: "Uttara", href: "/explore?area=Uttara" },
     ],
   },
   {
     title: "COMPANY",
     links: [
-      { label: "About Us", href: "/about" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Contact Support", href: "/contact" },
+      { label: "About Developer", href: "/trust?tab=about-author" },
+      { label: "Terms of Service", href: "/trust?tab=terms-of-service" },
+      { label: "Contact Support", href: "https://wa.me/8801319698855" },
     ],
   },
-];
-
-const bottomLinks: FooterLink[] = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
-  { label: "Neighborhoods", href: "/explore" },
-  { label: "Stats", href: "/#stats" },
 ];
 
 const MotionLink = motion.create(Link);
@@ -174,18 +165,19 @@ export default function Footer(): React.JSX.Element {
           © {currentYear} ThikAche Hyperlocal. Built for Dhaka.
         </motion.p>
 
-        <div className="flex items-center gap-6 flex-wrap justify-center sm:justify-end">
-          {bottomLinks.map((link) => (
-            <MotionLink
-              key={link.label}
-              href={link.href}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.15 }}
-              className="cursor-pointer text-zinc-500 hover:text-white transition-colors duration-200"
-            >
-              {link.label}
-            </MotionLink>
-          ))}
+        <div className="flex items-center gap-2 text-zinc-500 hover:text-zinc-300 transition-colors duration-300">
+          <span className="text-zinc-600">Crafted with care by</span>
+          <a
+            href="https://github.com/SyntaxAdil"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-1.5 font-semibold text-zinc-300 hover:text-indigo-400 transition-all duration-300"
+          >
+            <span className="relative">
+              Abdur Rahman Adil
+              <span className="absolute -bottom-0.5 left-0 w-0 h-[1px] bg-indigo-400 transition-all duration-300 group-hover:w-full"></span>
+            </span>
+          </a>
         </div>
       </div>
     </footer>
