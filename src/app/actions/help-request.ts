@@ -1,40 +1,9 @@
+// src/app/actions/help-request.ts
 "use server";
 
 import { helpRequestService } from "@/services/help-request.service";
 import { revalidatePath } from "next/cache";
-
-export type RequestCategory = 
-  | "plumbing"
-  | "electrical"
-  | "carpentry"
-  | "painting"
-  | "cleaning"
-  | "tech_support"
-  | "web_dev"
-  | "graphics_design"
-  | "data_entry"
-  | "delivery"
-  | "grocery_shopping"
-  | "moving_help"
-  | "tutoring"
-  | "language_translation"
-  | "pet_care"
-  | "medical_escort"
-  | "fitness_coaching"
-  | "other";
-
-interface CreateHelpRequestPayload {
-  title: string;
-  shortDescription: string;
-  fullDescription: string;
-  category: RequestCategory;
-  areaLabel: string;
-  coordinates: [number, number];
-  budget?: number;
-  isPaid: boolean;
-  preferredTime?: string;
-  imageUrl?: string;
-}
+import type { CreateHelpRequestPayload } from "@/lib/api-types";
 
 export async function createHelpRequestAction(payload: CreateHelpRequestPayload) {
   try {

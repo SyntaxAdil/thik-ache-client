@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { Loader2, Upload, X, MapPin, Info } from "lucide-react";
@@ -20,16 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DHAKA_AREAS, DhakaArea } from "../../../../assets/dhaka-top-areas";
-import { CATEGORIES } from "../../explore/explore-filters";
-import { useSession } from "../../../../lib/auth/auth-client";
 
-type RequestCategory =
-  | "tech"
-  | "tutoring"
-  | "errand"
-  | "moving"
-  | "repair"
-  | "other";
+import { useSession } from "../../../../lib/auth/auth-client";
+import type { RequestCategory } from "@/lib/api-types";
+import { CATEGORIES } from "../../explore/explore-filters";
 
 interface FormValues {
   title: string;
@@ -43,6 +38,7 @@ interface FormValues {
   budget: string;
   preferredTime: string;
 }
+
 interface UserWithPhone {
   id: string;
   name: string;
@@ -52,17 +48,19 @@ interface UserWithPhone {
   role?: string;
 }
 
+interface CategoryItem {
+  label: string;
+  value: RequestCategory;
+}
+
 export function HelpRequestForm() {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [isLocating, setIsLocating] = useState(false);
-const {data:session} = useSession();
+  const { data: session } = useSession();
   const user = session?.user as UserWithPhone | undefined;
-
-
-
 
   const {
     register,
@@ -76,7 +74,7 @@ const {data:session} = useSession();
       title: "",
       shortDescription: "",
       fullDescription: "",
-      category: "tech",
+      category: "tech_support",
       areaLabel: "Mirpur",
       latitude: "23.8103",
       longitude: "90.4125",
@@ -157,7 +155,6 @@ const {data:session} = useSession();
       toast.error(
         "Please add your phone number to your profile before posting a request",
       );
-      setIsPending(false);
       return;
     }
 
@@ -288,7 +285,7 @@ const {data:session} = useSession();
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-300 rounded-xl max-h-60">
-                  {CATEGORIES.map((cat) => (
+                  {(CATEGORIES as CategoryItem[]).map((cat: CategoryItem) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}
                     </SelectItem>
@@ -407,10 +404,12 @@ const {data:session} = useSession();
             {imageUrl ? (
               <div className="group relative rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden p-2 flex flex-col gap-2">
                 <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-zinc-800/80 bg-zinc-950">
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Uploaded preview"
-                    className="h-full w-full object-cover object-center"
+                    fill
+                    className="object-cover object-center"
+                    unoptimized
                   />
                   <Button
                     type="button"

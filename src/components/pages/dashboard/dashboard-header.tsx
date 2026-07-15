@@ -11,9 +11,28 @@ import {
 } from "../../ui/breadcrumb";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import AvatarUserDropdown from "../../shared/avatar-dropdown";
 import DashboardNotification from "./dashboard-notification";
+import { useSession } from "../../../lib/auth/auth-client";
+
+interface UserWithRole {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  role?: string;
+  phoneNumber?: string;
+  area?: string;
+  avgRating?: number;
+  completedCount?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface SessionWithRole {
+  user?: UserWithRole;
+}
 
 interface DashboardHeaderProps {
   title?: string;
@@ -24,7 +43,8 @@ export default function DashboardHeader({
 }: DashboardHeaderProps): React.JSX.Element {
   const pathname = usePathname();
   const segments = pathname ? pathname.split("/").filter(Boolean) : [];
-  
+  const { data: session } = useSession() as { data: SessionWithRole | null };
+  const userRole = session?.user?.role === "admin" ? "admin" : "user";
   const lastSegment = segments[segments.length - 1];
   
   const isObjectId = (str: string): boolean => {
@@ -137,11 +157,6 @@ export default function DashboardHeader({
     }
   };
 
-  const hoverTapVariants = {
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 }
-  };
-
   const iconHoverVariants = {
     hover: { scale: 1.1 },
     tap: { scale: 0.9 }
@@ -183,7 +198,6 @@ export default function DashboardHeader({
                           variants={breadcrumbItemVariants}
                           initial="hidden"
                           animate="visible"
-                          custom={index}
                           transition={{ delay: 0.1 + index * 0.05 }}
                         >
                           <BreadcrumbPage>{formattedSegment}</BreadcrumbPage>
@@ -193,7 +207,6 @@ export default function DashboardHeader({
                           variants={itemVariants}
                           whileHover="hover"
                           whileTap="tap"
-                          custom={index}
                         >
                           <BreadcrumbLink render={<Link href={href} />}>
                             {formattedSegment}
@@ -218,7 +231,7 @@ export default function DashboardHeader({
           whileTap="tap"
           variants={iconHoverVariants}
         >
-          <DashboardNotification />
+          <DashboardNotification userRole={userRole} />
         </motion.div>
         <motion.div
           whileHover="hover"

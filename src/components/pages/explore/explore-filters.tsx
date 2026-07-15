@@ -1,3 +1,4 @@
+// src/app/(main)/explore/explore-filters.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -11,8 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DHAKA_AREAS } from "@/assets/dhaka-top-areas";
+import type { RequestCategory } from "@/lib/api-types";
 
-export const CATEGORIES = [
+export const CATEGORIES: { label: string; value: RequestCategory }[] = [
   { label: "Plumbing", value: "plumbing" },
   { label: "Electrical", value: "electrical" },
   { label: "Carpentry", value: "carpentry" },
@@ -32,8 +35,6 @@ export const CATEGORIES = [
   { label: "Fitness Coaching", value: "fitness_coaching" },
   { label: "Other", value: "other" },
 ];
-
-import { DHAKA_AREAS } from "@/assets/dhaka-top-areas";
 
 export function ExploreFilters() {
   const router = useRouter();
@@ -108,7 +109,7 @@ export function ExploreFilters() {
             </SelectTrigger>
             <SelectContent className="bg-zinc-950 border-zinc-900">
               <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((cat) => (
+              {CATEGORIES.map((cat: { label: string; value: RequestCategory }) => (
                 <SelectItem key={cat.value} value={cat.value}>
                   {cat.label}
                 </SelectItem>
@@ -124,7 +125,7 @@ export function ExploreFilters() {
               <SelectValue placeholder="Area" />
             </SelectTrigger>
             <SelectContent className="bg-zinc-950 border-zinc-900">
-              {DHAKA_AREAS.map((area) => (
+              {DHAKA_AREAS.map((area: string) => (
                 <SelectItem key={area} value={area}>
                   {area}
                 </SelectItem>
@@ -162,7 +163,6 @@ export function ExploreFilters() {
             <SelectContent className="bg-zinc-950 border-zinc-900">
               <SelectItem value="newest">Newest</SelectItem>
               <SelectItem value="oldest">Oldest</SelectItem>
-          
             </SelectContent>
           </Select>
         </div>
@@ -178,7 +178,7 @@ export function ExploreFilters() {
               {currentArea} <X className="h-3 w-3" />
             </button>
           )}
-          {currentStatus && (
+          {currentStatus && currentStatus !== "all" && (
             <button
               onClick={() => updateUrlParam("status", null)}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 capitalize"
@@ -186,7 +186,7 @@ export function ExploreFilters() {
               {currentStatus.replace("_", " ")} <X className="h-3 w-3" />
             </button>
           )}
-          {currentCategory && (
+          {currentCategory && currentCategory !== "all" && (
             <button
               onClick={() => updateUrlParam("category", null)}
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs text-zinc-300"
