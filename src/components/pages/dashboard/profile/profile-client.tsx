@@ -1,8 +1,8 @@
-// components/dashboard/profile/profile-client.tsx
+// components/pages/dashboard/profile/profile-client.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { motion } from "motion/react";
 import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
@@ -21,11 +21,8 @@ import {
   Shield,
   Calendar,
   Star,
-  Briefcase,
-  Award,
   TrendingUp,
-  Settings,
-  LogOut,
+  AlertCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,11 +36,19 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { DHAKA_AREAS, DhakaArea } from "@/assets/dhaka-top-areas";
 
 interface UserProfile {
   id: string;
@@ -64,6 +69,7 @@ interface UserProfile {
 interface ProfileFormData {
   name: string;
   phoneNumber: string;
+  area: string;
 }
 
 interface ProfileClientProps {
@@ -81,20 +87,26 @@ export function ProfileClient({ user }: ProfileClientProps) {
     register,
     handleSubmit,
     reset,
+    control,
+    watch,
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
       name: user.name || "",
       phoneNumber: user.phoneNumber || "",
+      area: user.area || user.district || "",
     },
   });
+
+  const watchArea = watch("area");
 
   useEffect(() => {
     reset({
       name: user.name || "",
       phoneNumber: user.phoneNumber || "",
+      area: user.area || user.district || "",
     });
-    setTimeout(() => setImagePreview(user.image || ""), 0);
+    setImagePreview(user.image || "");
   }, [user, reset]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +148,7 @@ export function ProfileClient({ user }: ProfileClientProps) {
       const updateData: Record<string, unknown> = {
         name: data.name,
         image: imageUrl,
+        area: data.area,
       };
 
       if (data.phoneNumber) {
@@ -165,6 +178,7 @@ export function ProfileClient({ user }: ProfileClientProps) {
     reset({
       name: user.name || "",
       phoneNumber: user.phoneNumber || "",
+      area: user.area || user.district || "",
     });
     setImagePreview(user.image || "");
     setImageFile(null);
@@ -188,6 +202,8 @@ export function ProfileClient({ user }: ProfileClientProps) {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  const hasPhoneNumber = user.phoneNumber && user.phoneNumber.trim() !== "";
 
   const stats = [
     {
@@ -229,7 +245,6 @@ export function ProfileClient({ user }: ProfileClientProps) {
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Profile Card */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -275,6 +290,15 @@ export function ProfileClient({ user }: ProfileClientProps) {
                         </Badge>
                       </div>
                       <p className="text-sm text-zinc-500 mt-2">{user.email}</p>
+
+                      {!hasPhoneNumber && (
+                        <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center gap-1.5 justify-center">
+                          <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
+                          <span className="text-[10px] text-amber-400 font-medium">
+                            Add phone number
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="w-full mt-6 space-y-3">
@@ -358,7 +382,6 @@ export function ProfileClient({ user }: ProfileClientProps) {
               </Card>
             </motion.div>
 
-            {/* Right Column - Details */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -442,36 +465,62 @@ export function ProfileClient({ user }: ProfileClientProps) {
                           })}
                           disabled={!isEditing}
                           placeholder="+880 1234567890"
-                          className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 disabled:opacity-70 focus:border-red-500/50 focus:ring-red-500/20"
+                          className={`bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 disabled:opacity-70 focus:border-red-500/50 focus:ring-red-500/20 ${
+                            !hasPhoneNumber && !isEditing ? "border-amber-500/50" : ""
+                          }`}
                         />
                         {errors.phoneNumber && (
-                          <p className="text-xs text-red-500">
-                            {errors.phoneNumber.message}
+                          <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>
+                        )}
+                        {!hasPhoneNumber && !isEditing && (
+                          <p className="text-[10px] text-amber-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Please add your phone number
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
                         <Label
-                          htmlFor="location"
+                          htmlFor="area"
                           className="text-xs font-semibold text-zinc-500 flex items-center gap-2"
                         >
                           <MapPin className="h-3.5 w-3.5" />
                           Location
                         </Label>
-                        <Input
-                          id="location"
-                          value={user.area || user.district || "Not specified"}
-                          disabled
-                          className="bg-zinc-900/30 border-zinc-800 text-zinc-500 cursor-not-allowed"
-                        />
+                        {isEditing ? (
+                          <Controller
+                            name="area"
+                            control={control}
+                            render={({ field }) => (
+                              <Select value={field.value} onValueChange={field.onChange}>
+                                <SelectTrigger className="w-full bg-zinc-900/50 border-zinc-800 text-white rounded-xl">
+                                  <SelectValue placeholder="Select your area" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-zinc-950 border-zinc-900">
+                                  {DHAKA_AREAS.map((area: DhakaArea) => (
+                                    <SelectItem key={area} value={area}>
+                                      {area}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                        ) : (
+                          <Input
+                            id="location"
+                            value={user.area || user.district || "Not specified"}
+                            disabled
+                            className="bg-zinc-900/30 border-zinc-800 text-zinc-500 cursor-not-allowed"
+                          />
+                        )}
                       </div>
                     </div>
                   </form>
                 </CardContent>
               </Card>
 
-              {/* Activity Summary Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

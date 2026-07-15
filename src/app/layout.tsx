@@ -1,4 +1,3 @@
-// DNS
 import dns from "node:dns";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 import type { Metadata } from "next";
@@ -34,20 +33,23 @@ export const metadata: Metadata = {
     "Local Task Platform",
     "Neighborhood Trust",
     "Skill Sharing Dhaka",
-    "Dhaka Neighborhood Aid"
+    "Dhaka Neighborhood Aid",
   ],
-  authors: [{ name: "Abdur Rahman Adil", url: "https://abdur-rahman-dev.vercel.app" }],
+  authors: [
+    { name: "Abdur Rahman Adil", url: "https://abdur-rahman-dev.vercel.app" },
+  ],
   creator: "Abdur Rahman Adil",
   openGraph: {
     type: "website",
     locale: "en_BD",
     url: "https://thikache.vercel.app",
     title: "ThikAche — Hyperlocal Help Exchange Platform",
-    description: "Connect with neighbors in your area to request or provide help. Building a safer, more connected Dhaka.",
+    description:
+      "Connect with neighbors in your area to request or provide help. Building a safer, more connected Dhaka.",
     siteName: "ThikAche",
     images: [
       {
-        url: "/logo.png", 
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "ThikAche Platform Preview",
@@ -57,9 +59,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ThikAche — Hyperlocal Help Exchange Platform",
-    description: "Building a safer, more connected Dhaka through community help-exchange.",
-    creator: "@syntaxadil", 
-    images: ["/og-image.png"],
+    description:
+      "Building a safer, more connected Dhaka through community help-exchange.",
+    creator: "@syntaxadil",
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
@@ -77,6 +80,27 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "ThikAche",
+  url: "https://thikache.vercel.app",
+  applicationCategory: "LifestyleApplication",
+  operatingSystem: "Any",
+  description:
+    "A hyperlocal, community-driven help-exchange platform connecting neighbors in Dhaka for small everyday tasks.",
+  author: {
+    "@type": "Person",
+    name: "Abdur Rahman Adil",
+    url: "https://abdur-rahman-dev.vercel.app",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "BDT",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -88,6 +112,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
       style={{ colorScheme: "dark" }}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/30 selection:text-foreground">
         <SmoothScrollProvider>
           <main className="flex-1 flex flex-col">{children}</main>
