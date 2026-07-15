@@ -125,8 +125,8 @@ export function SmoothCursor({
     const checkSystemAndToggle = () => {
       const isDesktop = mediaQuery.matches;
       const savedSetting = localStorage.getItem(LOCAL_STORAGE_KEY);
-      const isSmoothScrollActive =
-        savedSetting === null ? true : savedSetting === "true";
+      // ডিফল্ট false রাখা হয়েছে
+      const isSmoothScrollActive = savedSetting === "true";
 
       const shouldEnable = isDesktop && isSmoothScrollActive;
       setIsEnabled(shouldEnable);
@@ -282,12 +282,14 @@ export function SmoothCursor({
 }
 
 export function SmoothScrollToggle() {
-  const [isSmooth, setIsSmooth] = useState(true);
+  const [isSmooth, setIsSmooth] = useState(false);
 
   useEffect(() => {
     const savedSetting = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedSetting !== null) {
-      setIsSmooth(savedSetting === "true");
+      setTimeout(() => {
+        setIsSmooth(savedSetting === "true");
+      },  0);
     }
   }, []);
 

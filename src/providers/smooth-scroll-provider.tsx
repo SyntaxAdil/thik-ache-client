@@ -7,15 +7,25 @@ interface SmoothScrollProviderProps {
   children: React.ReactNode;
 }
 
-export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
+export function SmoothScrollProvider({
+  children,
+}: SmoothScrollProviderProps) {
   return (
     <ReactLenis
       root
       options={{
-        // Lower values = smoother/looser scroll feel. Typical range: 0.05 to 0.15
-        lerp: 0.1,
-        // Syncs touch devices seamlessly without manual workarounds
-        syncTouch: true,
+        // Desktop
+        lerp: 0.08,
+
+        // Mobile
+        syncTouch: false,
+
+        // Consistent scrolling
+        wheelMultiplier: 1,
+        touchMultiplier: 1,
+
+        // Optional
+        autoResize: true,
       }}
     >
       {children}
