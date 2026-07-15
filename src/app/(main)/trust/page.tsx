@@ -18,7 +18,15 @@ import {
 import Image from "next/image";
 import FaGithub from "../../../components/ui/FaGithub";
 import FaLinkedin from "../../../components/ui/FaLinkedin";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Trust & Rules",
+  description: "Learn about the ThikAche ecosystem, our transparency guidelines, data architecture, and security protocols designed to keep your neighborhood safe.",
+  openGraph: {
+    title: "Trust & Rules | ThikAche",
+    description: "Learn about the ThikAche ecosystem, our transparency guidelines, data architecture, and security protocols.",
+  }
+};
 interface PageProps {
   searchParams: Promise<{
     tab?: string;

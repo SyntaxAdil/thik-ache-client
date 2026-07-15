@@ -5,7 +5,12 @@ import { helpRequestService } from "../../../services";
 import { ReusableTablePagination } from "../../../components/shared/table-pagination";
 import { auth } from "../../../lib/auth/auth";
 import { taskColumns, Task } from "../../../components/pages/dashboard/tasks/task-columns";
+import { Metadata } from "next";
 
+const metadata: Metadata = {
+  title: "My Tasks",
+  description: "View all the tasks you have completed.",
+};
 export default async function MyTasks() {
   const session = await auth.api.getSession({
     headers: await headers(),

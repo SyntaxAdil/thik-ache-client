@@ -19,14 +19,61 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://thikache.vercel.app"),
   title: {
-    default: "ThikAche — Hyperlocal Help Exchange Platform",
+    default: "ThikAche — Hyperlocal Help Exchange Platform for Dhaka",
     template: "%s | ThikAche",
   },
   description:
-    "A closed-loop, community-driven platform where neighbors connect to request and provide quick local assistance, building real trust in your neighborhood.",
-  icons: {
-    icon: "/favicon.ico",
+    "ThikAche is a closed-loop, community-driven platform in Dhaka. Request or provide quick, trustworthy local assistance. Build real neighborhood trust today.",
+  keywords: [
+    "ThikAche",
+    "Dhaka Hyperlocal",
+    "Community Help Exchange",
+    "Neighborly Assistance Dhaka",
+    "Local Task Platform",
+    "Neighborhood Trust",
+    "Skill Sharing Dhaka",
+    "Dhaka Neighborhood Aid"
+  ],
+  authors: [{ name: "Abdur Rahman Adil", url: "https://abdur-rahman-dev.vercel.app" }],
+  creator: "Abdur Rahman Adil",
+  openGraph: {
+    type: "website",
+    locale: "en_BD",
+    url: "https://thikache.vercel.app",
+    title: "ThikAche — Hyperlocal Help Exchange Platform",
+    description: "Connect with neighbors in your area to request or provide help. Building a safer, more connected Dhaka.",
+    siteName: "ThikAche",
+    images: [
+      {
+        url: "/logo.png", 
+        width: 1200,
+        height: 630,
+        alt: "ThikAche Platform Preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ThikAche — Hyperlocal Help Exchange Platform",
+    description: "Building a safer, more connected Dhaka through community help-exchange.",
+    creator: "@syntaxadil", 
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://thikache.vercel.app",
   },
 };
 

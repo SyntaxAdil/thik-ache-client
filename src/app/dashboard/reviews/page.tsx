@@ -5,8 +5,12 @@ import { auth } from "@/lib/auth/auth";
 import { reviewService } from "@/services/review.service";
 import { ReviewData } from "../../../components/pages/dashboard/review/review-columns";
 import { ReviewManagementClient } from "../../../components/pages/dashboard/review/review-management-client";
+import { Metadata } from "next";
 
-
+const metadata: Metadata = {
+  title: "Review Management",
+  description: "Manage all the reviews and feedbacks.",
+};
 export default async function ReviewManagementPage() {
   const session = await auth.api.getSession({
     headers: await headers(),

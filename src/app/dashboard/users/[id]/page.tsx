@@ -10,7 +10,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Metadata } from "next";
 
+const metadata: Metadata = {
+  title: "Profile",
+  description: "View your profile and manage your account settings.",
+};
 interface PageProps {
   params: Promise<{
     id: string;

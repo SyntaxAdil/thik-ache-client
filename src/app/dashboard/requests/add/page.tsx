@@ -1,6 +1,11 @@
 import React from "react";
 import { HelpRequestForm } from "../../../../components/pages/dashboard/requests/HelpRequestForm";
+import { Metadata } from "next";
 
+const metadata: Metadata = {
+  title: "Create Help Request",
+  description: "Create a new help request to find a helper nearby.",
+};
 export default function AddRequests() {
   return (
     <div className="w-full max-w-2xl mx-auto px-4 py-8">

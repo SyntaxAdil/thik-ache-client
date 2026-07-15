@@ -18,6 +18,47 @@ import { HelpApproachButton } from "../../../../components/shared/help-approach-
 import { HelpRequestCard } from "../../../../components/shared/help-request-card";
 import { auth } from "@/lib/auth/auth";
 import { helpRequestService } from "../../../../services/help-request.service";
+import type { Metadata } from "next";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const response = await helpRequestService.getHelpRequestById(id);
+    const data = response && typeof response === "object" && "data" in response 
+      ? (response as { data: { title?: string; shortDescription?: string; imageUrl?: string } }).data 
+      : response as { title?: string; shortDescription?: string; imageUrl?: string };
+
+    const title = data?.title || "Request Details";
+    const description = data?.shortDescription || "View details of a hyperlocal help request on ThikAche.";
+    const image = data?.imageUrl || "/og-image.png";
+
+    return {
+      title: `${title} | ThikAche`,
+      description: description,
+      openGraph: {
+        title: `${title} | ThikAche`,
+        description: description,
+        images: [{ url: image, width: 1200, height: 630 }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} | ThikAche`,
+        description: description,
+        images: [image],
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Request Details | ThikAche",
+      description: "View details of a hyperlocal help request on ThikAche.",
+    };
+  }
+}
 
 interface PosterProfile {
   _id: string;
@@ -91,10 +132,6 @@ interface RelatedRequestCard {
   };
 }
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
 interface RelatedBackendItem {
   _id: string;
   title?: string;
@@ -132,28 +169,39 @@ export default async function RequestDetailsPage({ params }: PageProps) {
 
   try {
     const [detailsResponse, relatedResponse] = await Promise.all([
-      (helpRequestService.getHelpRequestById(id) as unknown) as Promise<Record<string, unknown>>,
-      (helpRequestService.getRelatedHelpRequests(id) as unknown) as Promise<RelatedBackendItem[]>,
+      helpRequestService.getHelpRequestById(id) as unknown as Promise<
+        Record<string, unknown>
+      >,
+      helpRequestService.getRelatedHelpRequests(id) as unknown as Promise<
+        RelatedBackendItem[]
+      >,
     ]);
 
     if (detailsResponse) {
-      if ("data" in detailsResponse && detailsResponse.data && typeof detailsResponse.data === "object") {
+      if (
+        "data" in detailsResponse &&
+        detailsResponse.data &&
+        typeof detailsResponse.data === "object"
+      ) {
         const nestedData = detailsResponse.data as Record<string, unknown>;
         requestData = nestedData as unknown as HelpRequestData;
-        
+
         const rawReviews = (nestedData.reviews as RawReview[]) || [];
         reviews = rawReviews.map((rev) => {
-          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.name || 'Unknown User'
-            : 'Unknown User';
-          
-          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.avatarUrl
-            : undefined;
-          
-          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.role || 'User'
-            : 'User';
+          const reviewerName =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.name || "Unknown User"
+              : "Unknown User";
+
+          const reviewerAvatar =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.avatarUrl
+              : undefined;
+
+          const reviewerRole =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.role || "User"
+              : "User";
 
           return {
             _id: rev._id,
@@ -167,21 +215,28 @@ export default async function RequestDetailsPage({ params }: PageProps) {
             direction: "helper_to_requester" as const,
           };
         });
-      } else if ("requestData" in detailsResponse && detailsResponse.requestData && typeof detailsResponse.requestData === "object") {
+      } else if (
+        "requestData" in detailsResponse &&
+        detailsResponse.requestData &&
+        typeof detailsResponse.requestData === "object"
+      ) {
         requestData = detailsResponse.requestData as unknown as HelpRequestData;
         const rawReviews = (detailsResponse.reviews as RawReview[]) || [];
         reviews = rawReviews.map((rev) => {
-          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.name || 'Unknown User'
-            : 'Unknown User';
-          
-          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.avatarUrl
-            : undefined;
-          
-          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.role || 'User'
-            : 'User';
+          const reviewerName =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.name || "Unknown User"
+              : "Unknown User";
+
+          const reviewerAvatar =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.avatarUrl
+              : undefined;
+
+          const reviewerRole =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.role || "User"
+              : "User";
 
           return {
             _id: rev._id,
@@ -199,17 +254,20 @@ export default async function RequestDetailsPage({ params }: PageProps) {
         requestData = detailsResponse as unknown as HelpRequestData;
         const rawReviews = (detailsResponse.reviews as RawReview[]) || [];
         reviews = rawReviews.map((rev) => {
-          const reviewerName = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.name || 'Unknown User'
-            : 'Unknown User';
-          
-          const reviewerAvatar = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.avatarUrl
-            : undefined;
-          
-          const reviewerRole = typeof rev.reviewer === 'object' && rev.reviewer !== null
-            ? rev.reviewer.role || 'User'
-            : 'User';
+          const reviewerName =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.name || "Unknown User"
+              : "Unknown User";
+
+          const reviewerAvatar =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.avatarUrl
+              : undefined;
+
+          const reviewerRole =
+            typeof rev.reviewer === "object" && rev.reviewer !== null
+              ? rev.reviewer.role || "User"
+              : "User";
 
           return {
             _id: rev._id,
@@ -269,16 +327,22 @@ export default async function RequestDetailsPage({ params }: PageProps) {
   };
 
   const resolvedAreaLabel = requestData?.areaLabel || "Unknown Location";
-  
+
   const coordinates = requestData.location?.coordinates || [90.3891, 23.8225];
-  const [lng, lat] = coordinates && coordinates.length === 2 ? coordinates : [90.3891, 23.8225];
+  const [lng, lat] =
+    coordinates && coordinates.length === 2 ? coordinates : [90.3891, 23.8225];
 
   const mapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.0025}%2C${lat - 0.0025}%2C${lng + 0.0025}%2C${lat + 0.0025}&layer=mapnik`;
   const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
-  const hasPosterProfile = typeof requestData.postedBy === "object" && requestData.postedBy !== null;
-  const posterProfile = hasPosterProfile ? (requestData.postedBy as PosterProfile) : null;
-  const posterId = posterProfile ? posterProfile._id : (requestData.postedBy as string);
+  const hasPosterProfile =
+    typeof requestData.postedBy === "object" && requestData.postedBy !== null;
+  const posterProfile = hasPosterProfile
+    ? (requestData.postedBy as PosterProfile)
+    : null;
+  const posterId = posterProfile
+    ? posterProfile._id
+    : (requestData.postedBy as string);
 
   return (
     <main className="min-h-screen bg-background text-foreground py-12 antialiased">
@@ -551,9 +615,7 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                   </div>
                   <div className="flex items-center gap-0.5 text-xs font-bold text-amber-400">
                     <Star className="h-3.5 w-3.5 fill-current" />
-                    <span>
-                      {posterProfile?.avgRating?.toFixed(1) || "0.0"}
-                    </span>
+                    <span>{posterProfile?.avgRating?.toFixed(1) || "0.0"}</span>
                   </div>
                 </div>
 
@@ -561,7 +623,9 @@ export default async function RequestDetailsPage({ params }: PageProps) {
                   <div className="mt-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-emerald-400" />
-                      <span className="text-xs text-zinc-400">Contact Requester</span>
+                      <span className="text-xs text-zinc-400">
+                        Contact Requester
+                      </span>
                     </div>
                     <a
                       href={`tel:${posterProfile.phoneNumber}`}

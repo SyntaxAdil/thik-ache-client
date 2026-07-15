@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +30,7 @@ export function ReviewDialog({
   onSuccess,
 }: ReviewDialogProps) {
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, reset } = useForm<{ comment: string }>();
 
@@ -44,15 +44,13 @@ export function ReviewDialog({
         rating: rating,
         comment: data.comment,
       });
-      toast.success("Review submitted successfully!");
+      toast.success("Feedback recorded successfully");
       reset();
       setRating(0);
       onOpenChange(false);
       onSuccess?.();
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to submit review";
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : "Failed to submit review");
     } finally {
       setIsSubmitting(false);
     }
@@ -60,30 +58,46 @@ export function ReviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-950 border border-zinc-900">
+      <DialogContent className="bg-zinc-950/80 backdrop-blur-xl border border-zinc-800/50 shadow-2xl rounded-2xl sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Rate your experience</DialogTitle>
+          <DialogTitle className="text-xl font-bold tracking-tight text-white text-center">
+            Rate your experience
+          </DialogTitle>
+          <p className="text-xs text-zinc-500 text-center font-medium">
+            Your feedback helps build trust in the neighborhood.
+          </p>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex gap-2 justify-center py-2">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
+          <div className="flex gap-1 justify-center py-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
-                className={`h-8 w-8 cursor-pointer transition-colors ${rating >= star ? "fill-yellow-500 text-yellow-500" : "text-zinc-600"}`}
+                className={`h-9 w-9 cursor-pointer transition-all duration-200 ${
+                  (hoverRating || rating) >= star 
+                    ? "fill-indigo-500 text-indigo-500 scale-110" 
+                    : "text-zinc-700 hover:text-zinc-500"
+                }`}
                 onClick={() => setRating(star)}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
               />
             ))}
           </div>
+
           <Textarea
             {...register("comment")}
-            placeholder="Share your feedback..."
-            className="bg-zinc-900 border-zinc-800"
+            placeholder="How was your interaction? (Optional)"
+            className="min-h-[100px] bg-zinc-900/50 border-zinc-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl placeholder:text-zinc-600 resize-none transition-all"
           />
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-              {isSubmitting ? "Submitting..." : "Submit Review"}
-            </Button>
-          </DialogFooter>
+
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full h-11 bg-white text-black hover:bg-zinc-200 font-bold rounded-xl transition-transform active:scale-[0.98]"
+          >
+            {isSubmitting ? "Processing..." : "Submit Feedback"}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

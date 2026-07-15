@@ -5,8 +5,12 @@ import { auth } from "@/lib/auth/auth";
 import { userService } from "@/services/user.service";
 import { UserData } from "../../../components/pages/dashboard/user/user-columns";
 import { UserManagementClient } from "../../../components/pages/dashboard/user/user-management-client";
+import { Metadata } from "next";
 
-
+const metadata: Metadata = {
+  title: "User Management",
+  description: "Manage all the users and their profiles.",
+};  
 export default async function UserManagementPage() {
   const session = await auth.api.getSession({
     headers: await headers(),

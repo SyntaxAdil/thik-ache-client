@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/pagination";
 import { ChevronLeftIcon, ChevronRightIcon, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { helpRequestService } from "../../../services";
+import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -61,6 +62,14 @@ interface ApiResponse {
   };
 }
 
+export const metadata: Metadata = {
+  title: "Explore Neighborhoods",
+  description: "Browse verified hyperlocal help requests in Dhaka. Find tasks in Dhanmondi, Mirpur, Gulshan, and Uttara. Connect with your community today.",
+  openGraph: {
+    title: "Explore Neighborhoods | ThikAche",
+    description: "Browse verified hyperlocal help requests in Dhaka. Find tasks in Dhanmondi, Mirpur, Gulshan, and Uttara.",
+  }
+};
 export default async function ExplorePage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const searchQuery = resolvedParams.search?.toLowerCase() || "";

@@ -1,6 +1,7 @@
 import React from "react";
 import { helpRequestService } from "@/services/help-request.service";
 import { HelpRequestCard } from "../../../components/shared/help-request-card";
+import { Metadata } from "next";
 
 type RequestStatus = "open" | "matched" | "in_progress" | "completed" | "cancelled";
 type RequestCategory = "tech" | "tutoring" | "errand" | "moving" | "repair" | "other";
@@ -14,6 +15,11 @@ interface UserSummary {
   completedCount?: number;
 }
 
+const metadata: Metadata = {
+  title: "My Requests",
+  description: "Manage and track all the help requests you have created.",
+  
+};
 interface HelpRequest {
   _id: string;
   title: string;

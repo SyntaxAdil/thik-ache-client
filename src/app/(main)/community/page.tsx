@@ -6,7 +6,15 @@ import { helpRequestService } from "@/services/help-request.service";
 import { userService } from "@/services/user.service";
 import { MemberLog } from "../../../components/pages/community/community-columns";
 import { CommunityTable } from "../../../components/pages/community/community-table";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Community",
+  description: "Join the ThikAche community network. A space where neighbors connect, share skills, and foster a safer, more helpful Dhaka.",
+  openGraph: {
+    title: "Community | ThikAche",
+    description: "Join the ThikAche community network. A space where neighbors connect, share skills, and foster a safer, more helpful Dhaka.",
+  }
+};
 interface UserSummary {
   _id: string;
   name: string;
