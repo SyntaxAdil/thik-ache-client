@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { MapPin, Loader2, RefreshCw } from "lucide-react";
 
 interface MapPin {
   lat: number;
@@ -15,9 +16,6 @@ const DHAKA_SPOTS: MapPin[] = [
   { lat: 23.7936, lon: 90.4066, label: "Banani - Design Task", user: "Saima" },
 ];
 
-// bbox aspect ratio is deliberately locked to 2:1 to match the container below,
-// so OpenStreetMap never has to auto-expand the view to fit — which is what
-// was causing the pins to drift off their real locations.
 const BBOX = {
   minLon: 90.2558,
   maxLon: 90.5162,
@@ -32,19 +30,93 @@ function toPercent(lat: number, lon: number) {
 }
 
 export function DhakaMapVisual() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
   const points = DHAKA_SPOTS.map((spot) => ({ ...spot, ...toPercent(spot.lat, spot.lon) }));
+
+  const handleLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  const handleError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+
+  const handleRetry = () => {
+    setIsLoading(true);
+    setHasError(false);
+    setRetryCount((prev) => prev + 1);
+  };
+
+  // Reset loading state when retry changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        // If still loading after 5 seconds, treat as error
+        setIsLoading(false);
+        setHasError(true);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [isLoading, retryCount]);
 
   return (
     <div className="relative w-full aspect-[2/1] rounded-2xl border border-zinc-900 bg-zinc-950 overflow-hidden select-none">
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-zinc-950/80">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
+            <span className="text-xs text-zinc-500">Loading map...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {hasError && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-zinc-950/90">
+          <div className="flex flex-col items-center gap-4 p-6 text-center max-w-sm">
+            <div className="p-3 rounded-full bg-red-500/10 border border-red-500/20">
+              <MapPin className="h-6 w-6 text-red-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-zinc-300">Map unavailable</p>
+              <p className="text-xs text-zinc-500 mt-1">Unable to load the map at this moment</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-300 transition-colors"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Map Iframe */}
       <iframe
+        key={`map-${retryCount}`}
         title="Map of Dhaka"
-        className="absolute inset-0 w-full h-full grayscale invert-[0.92] contrast-[1.15]"
-        style={{ border: 0, pointerEvents: "none" }}
+        className="absolute inset-0 w-full h-full grayscale invert-[0.92] contrast-[1.15] transition-opacity duration-500"
+        style={{ 
+          border: 0, 
+          pointerEvents: "none",
+          opacity: isLoading || hasError ? 0 : 1,
+        }}
         src={`https://www.openstreetmap.org/export/embed.html?bbox=${BBOX.minLon}%2C${BBOX.minLat}%2C${BBOX.maxLon}%2C${BBOX.maxLat}&layer=mapnik`}
+        onLoad={handleLoad}
+        onError={handleError}
       />
 
+      {/* Overlay */}
       <div className="absolute inset-0 bg-zinc-950/40 pointer-events-none" />
 
+      {/* Connection Lines */}
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
@@ -67,6 +139,7 @@ export function DhakaMapVisual() {
         </defs>
       </svg>
 
+      {/* Pins */}
       {points.map((spot, index) => (
         <div
           key={index}
@@ -89,6 +162,7 @@ export function DhakaMapVisual() {
         </div>
       ))}
 
+      {/* Bottom Label */}
       <div className="absolute bottom-3 right-4 px-2 py-1 rounded border border-zinc-900 bg-zinc-950/80 text-[10px] uppercase tracking-widest font-bold text-zinc-500 z-20">
         Dhaka Hub Feed
       </div>

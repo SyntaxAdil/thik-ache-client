@@ -18,14 +18,14 @@ export const reviewService = {
       { requiresAuth: false }
     ),
 
+  getAllReviews: () =>
+    apiRequest<Review[]>(`/reviews/all`, { requiresAuth: false }),
+
   hasUserReviewed: (requestId: string) =>
     apiRequest<{ hasReviewed: boolean; reviewId: string | null }>(
       `/reviews/request/${requestId}/check`,
       { requiresAuth: true }
     ),
-
-  getAllReviews: () =>
-    apiRequest<Review[]>(`/reviews/all`, { requiresAuth: true }),
 
   createReview: (payload: CreateReviewPayload) =>
     apiRequest<Review>(`/reviews`, {

@@ -9,7 +9,7 @@ export const userService = {
     apiRequest<Record<string, unknown>>(`/users/me/activity`),
 
   getAllUsers: () =>
-    apiRequest<UserProfile[]>(`/users`, { requiresAuth: true }),
+    apiRequest<UserProfile[]>(`/users`, { requiresAuth: false }),
 
   deleteUser: (id: string) =>
     apiRequest<{ message: string }>(`/users/${id}`, {
