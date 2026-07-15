@@ -36,7 +36,7 @@ export function WhyTrustUs() {
         <div className="flex flex-col items-center mb-4">
           <SectionHeading
             title="Why Trust Us"
-            subtitle="We prioritize safety, reliability, and community-driven support in everything we do."
+            subtitle="We prioritize safety, reliability, and community-driven support."
             align="center"
             className="max-w-xl text-zinc-400"
           />
